@@ -419,8 +419,9 @@ helping real people solve acute technical crises.
     if (!container) return;
 
     const bookmarks = [
-      { title: 'GitHub Profile', url: 'https://github.com/Rana0Codes', icon: 'fab fa-github' },
-      { title: 'Portfolio Live', url: 'https://rana0codes.github.io/Portfolio/', icon: 'fas fa-globe' },
+      { title: 'Portfolio v2', url: 'https://rana0codes.github.io/Portfolio-v2/', icon: 'fas fa-laptop-code' },
+      { title: 'Portfolio v1', url: 'https://rana0codes.github.io/Portfolio/', icon: 'fas fa-globe' },
+      { title: 'GitHub (@Rana0Codes)', url: 'https://github.com/Rana0Codes', icon: 'fab fa-github' },
       { title: 'LinkedIn', url: 'https://www.linkedin.com/in/juyel-rana/', icon: 'fab fa-linkedin' },
       { title: 'YouTube Channel', url: 'https://www.youtube.com/@Rana0Codes', icon: 'fab fa-youtube' }
     ];

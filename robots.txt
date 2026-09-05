@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rana0codes.github.io/Portfolio/sitemap.xml
+Sitemap: https://rana0codes.github.io/Portfolio-v2/sitemap.xml

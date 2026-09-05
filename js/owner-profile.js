@@ -7,8 +7,8 @@ export const ownerProfile = {
   identity: {
     fullName: 'Juyel Rana',
     shortName: 'Juyel',
-    osName: 'Juyel.OS v1.3',
-    domain: 'https://rana0codes.github.io/Portfolio/',
+    osName: 'Portfolio v2 (Juyel.OS)',
+    domain: 'https://rana0codes.github.io/Portfolio-v2/',
     location: 'Kolkata, WB, India',
     timezone: 'Asia/Kolkata (IST / UTC+5:30)',
     roles: [

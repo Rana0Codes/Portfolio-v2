@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌌 Juyel.OS — Titanium VisionOS Web Desktop & Engineering Showcase
+# 🌌 Portfolio v2 (Juyel.OS) — Titanium VisionOS Web Desktop & Engineering Showcase
 
 **A futuristic, VisionOS-inspired personal web desktop and interactive engineering showcase built with 100% pure Vanilla JavaScript, Glassmorphic CSS3, and the Web Audio API.**
 
@@ -9,15 +9,15 @@
 [![CSS3 Glassmorphism](https://img.shields.io/badge/CSS3-VisionOS_Glass-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![Web Audio API](https://img.shields.io/badge/Audio-Web_Audio_API-38bdf8?style=for-the-badge&logo=soundcharts&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-0_Zero-success.svg?style=for-the-badge)](#-zero-framework-philosophy)
-[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)](https://github.com/Rana0Codes)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)](https://github.com/Rana0Codes/Portfolio-v2)
 
 <br>
 
 <p align="center">
-  <img src="assets/screenshots/desktop-hero.png" alt="Juyel.OS Desktop Preview" width="95%" style="border-radius: 12px; box-shadow: 0 25px 70px rgba(0,0,0,0.6);" />
+  <img src="assets/screenshots/desktop-hero.png" alt="Portfolio v2 Desktop Preview" width="95%" style="border-radius: 12px; box-shadow: 0 25px 70px rgba(0,0,0,0.6);" />
 </p>
 
-### [⚡ Launch Live Preview](https://rana0codes.github.io/Portfolio/) • [Explore Projects](#-applications-catalog) • [Report Issue](https://github.com/Rana0Codes) • [Contact Juyel](mailto:ranajuyel460@gmail.com)
+### [⚡ Launch Live Preview](https://rana0codes.github.io/Portfolio-v2/) • [Explore Projects](#-applications-catalog) • [Report Issue](https://github.com/Rana0Codes/Portfolio-v2/issues) • [Contact Juyel](mailto:ranajuyel460@gmail.com)
 
 </div>
 
@@ -107,13 +107,15 @@ A built-in shell that responds to developer commands:
 - Create, edit, reposition, and delete notes.
 - **Versioned Local Storage**: Notes persist automatically across browser sessions under schema `personal-os-whiteboard-v1`.
 
-### 7. 🎵 Ambient Web Audio Synthesizer
-- Built on the W3C **Web Audio API** using dual `OscillatorNode` harmonic frequencies and `GainNode` shaping.
-- 3 relaxing procedural soundscapes:
-  1. *Cyber Dreams* (Lofi Ambient Chords)
-  2. *Midnight Terminal* (Deep Focus Synth)
-  3. *Cosmic Flow* (Analog Space Drone)
-- **Live 4-Bar Equalizer**: Bounces in real-time in the dock during playback.
+### 7. 🎵 Offline Lo-Fi Audio Engine & Dynamic Frequency Visualizer
+- Powered by an HTML5 `<audio>` engine paired with a Web Audio API `AnalyserNode` for real-time FFT frequency curve analysis.
+- **4 Curated Offline Lo-Fi Tracks** (~7.7 MB compressed offline assets in `assets/audio/`):
+  1. *Midnight Lo-Fi* (Chill Lofi Sleep & Code Session)
+  2. *Deep Focus Flow* (Mellow Lofi Instrumental Beats)
+  3. *Chasing That Feeling* (Atmospheric Aesthetic Lo-Fi)
+  4. *Cyberpunk Groove* (Dynamic Retro Synthwave Chords)
+- **Live 4-Bar Equalizer Waves**: Real frequency-driven equalizer bars in the system dock that dance dynamically with the audio track's actual amplitude and spectrum.
+- **Full Player Ergonomics**: Scrubbable progress bar, real-time elapsed/duration timestamp (`mm:ss`), responsive volume slider with `localStorage` memory, and auto-advancing playlist queue.
 
 ---
 
@@ -173,19 +175,18 @@ The operating system includes 10 dedicated workstation applications:
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
 | <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>Cmd</kbd> + <kbd>K</kbd> | **Spotlight Search** | Focuses and launches global command search |
-| <kbd>Esc</kbd> | **Dismiss / Close** | Closes top-most modal, active window, or palette |
 | <kbd>Tab</kbd> | **Focus Traversal** | Cycles focus through active window controls |
 
 ---
 
 ## 🚀 Quick Start & Local Setup
 
-Because `Juyel.OS` is built entirely with standard ES6+ Modules, it runs natively on any static web server without compiling or building.
+Because `Portfolio v2 (Juyel.OS)` is built entirely with standard ES6+ Modules, it runs natively on any static web server without compiling or building.
 
 ### 1. Clone or Download the Project
 ```bash
-git clone https://github.com/Rana0Codes/juyel-os.git
-cd juyel-os
+git clone https://github.com/Rana0Codes/Portfolio-v2.git
+cd Portfolio-v2
 ```
 
 ### 2. Run Local Server (Choose Any)
@@ -210,39 +211,24 @@ Right-click `index.html` inside VS Code and select **"Open with Live Server"**.
 
 You can host this project on GitHub Pages in under 60 seconds:
 
-1. Push this repository to GitHub (e.g. `https://github.com/Rana0Codes/juyel-os`).
+1. Push this repository to GitHub (`https://github.com/Rana0Codes/Portfolio-v2`).
 2. Go to your repository on GitHub and click **Settings** → **Pages**.
 3. Under **Build and deployment** → **Source**, select **Deploy from a branch**.
 4. Set Branch to **`main`** and folder to **`/ (root)`**, then click **Save**.
 5. Your live operating system will be live at:
    ```
-   https://<your-username>.github.io/<repository-name>/
+   https://rana0codes.github.io/Portfolio-v2/
    ```
 
 ---
 
-## 📤 How to Upload as a New GitHub Repository
+## 📤 Project GitHub Repository
 
-To upload this project as a **new, separate GitHub repository** (without touching or replacing your existing portfolio repository):
+This project is maintained independently in its own dedicated repository:
 
 ```bash
-# 1. Open terminal inside the project folder
-cd "c:\Users\Juyel Rana\Desktop\P1"
-
-# 2. Verify git status
-git status
-
-# 3. Add any pending changes
-git add .
-git commit -m "feat: release Juyel.OS v1.3 with VisionOS web desktop and ranking README"
-
-# 4. Create a new repository on GitHub:
-#    Go to https://github.com/new
-#    Name it: "juyel-os" (or "personal-ai-os")
-#    Set to Public, and DO NOT initialize with a README (it already has one!)
-
-# 5. Link and push to your new repository:
-git remote add origin https://github.com/Rana0Codes/juyel-os.git
+# Repository: https://github.com/Rana0Codes/Portfolio-v2.git
+git remote add origin https://github.com/Rana0Codes/Portfolio-v2.git
 git branch -M main
 git push -u origin main
 ```
@@ -252,7 +238,7 @@ git push -u origin main
 ## 📂 Project Structure
 
 ```
-juyel-os/
+Portfolio-v2/
 ├── index.html                  # Core OS desktop shell, system bar, dock, and window mounts
 ├── LICENSE                     # MIT Open Source License
 ├── README.md                   # Comprehensive repository guide and architecture manual
@@ -272,12 +258,17 @@ juyel-os/
 │   ├── os-window-manager.js    # Multi-window lifecycle, dragging physics, focus stacking
 │   ├── os-desktop.js           # Live clock, theme switcher, boot sequence, canvas particles
 │   ├── os-apps.js              # Application renderers & project detail modals
-│   ├── os-audio.js             # Web Audio API polyphonic chord & ambient sound engine
+│   ├── os-audio.js             # Web Audio API analyser & offline lo-fi audio engine
 │   ├── os-companion.js         # Astro-J reactive mood engine, chirps, and dragging
 │   ├── os-whiteboard.js        # Interactive sticky notes with localStorage persistence
 │   └── os-terminal.js          # Command palette search (Ctrl+K) & CLI interpreter
 │
 └── assets/
+    ├── audio/                  # Curated offline lo-fi tracks (128kbps MP3s)
+    │   ├── midnight-lofi.mp3
+    │   ├── deep-focus.mp3
+    │   ├── chasing-feeling.mp3
+    │   └── cyber-groove.mp3
     ├── profile-photo.jpg       # Authentic portrait photograph of Juyel Rana
     ├── cv/
     │   └── CV.pdf              # Official downloadable Curriculum Vitae
@@ -300,7 +291,7 @@ juyel-os/
 - **Structure**: Semantic HTML5 (`<main>`, `<dialog>`, `<nav>`, `<footer role="toolbar">`)
 - **Styling**: Vanilla CSS3 (Custom properties, CSS Grid, Flexbox, Backdrop filters, Glassmorphic reflections)
 - **Logic**: ES6+ JavaScript Modules (Event-driven architecture, zero framework overhead)
-- **Audio Engine**: W3C Web Audio API (`OscillatorNode`, `GainNode`, real-time frequency curves)
+- **Audio Engine**: W3C Web Audio API (`AnalyserNode`, real-time FFT frequency visualizer, HTML5 Audio)
 - **Persistence**: Web Storage API (`localStorage` with schema versioning and defensive parsing)
 - **Security**: Honeypot anti-spam protection, strict input sanitization, zero hardcoded secret keys.
 
@@ -310,7 +301,17 @@ juyel-os/
 
 Contributions, issues, and feature requests are always welcome!
 
-1. Fork the Project (`https://github.com/Rana0Codes/juyel-os`)
+1. Fork the Project (`https://github.com/Rana0Codes/Portfolio-v2`)
+2. Create your Feature Branch (`git checkout -b feat/NewCapability`)
+3. Commit your Changes (`git commit -m "feat: add NewCapability"`)
+4. Push to the Branch (`git push origin feat/NewCapability`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.ct (`https://github.com/Rana0Codes/juyel-os`)
 2. Create your Feature Branch (`git checkout -b feat/NewCapability`)
 3. Commit your Changes (`git commit -m "feat: add NewCapability"`)
 4. Push to the Branch (`git push origin feat/NewCapability`)
