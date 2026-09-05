@@ -1,0 +1,212 @@
+/* ==========================================================================
+   JUYEL OS — Titanium VisionOS Theme System (No Old Portfolio Colors)
+   ========================================================================== */
+
+/* Dark Mode (Default — Deep Space Titanium Obsidian) */
+[data-theme="dark"] {
+  --bg-desktop: #070a13;
+  --bg-panel: rgba(14, 19, 34, 0.85);
+  --bg-panel-solid: #0d1222;
+  --bg-surface: rgba(22, 30, 54, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-prominent: rgba(255, 255, 255, 0.16);
+  --border-accent: rgba(59, 130, 246, 0.5);
+
+  --color-primary: #3b82f6;
+  --color-primary-rgb: 59, 130, 246;
+  --color-primary-hover: #60a5fa;
+  --color-accent: #8b5cf6;
+  --color-accent-rgb: 139, 92, 246;
+  --color-cyan: #38bdf8;
+  --color-amber: #f59e0b;
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #070a13;
+
+  --shadow-window: 0 24px 70px rgba(0, 0, 0, 0.75), 0 0 1px rgba(255, 255, 255, 0.2);
+  --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="dark"] .wallpaper-gradient {
+  background: 
+    radial-gradient(circle at 18% 25%, rgba(59, 130, 246, 0.12) 0%, transparent 48%),
+    radial-gradient(circle at 82% 75%, rgba(139, 92, 246, 0.14) 0%, transparent 52%),
+    radial-gradient(circle at 50% 50%, rgba(14, 19, 34, 0.9) 0%, #070a13 100%);
+}
+
+/* Night Mode (Cosmic Electric Violet & Deep Navy) */
+[data-theme="night"] {
+  --bg-desktop: #080b1e;
+  --bg-panel: rgba(18, 22, 48, 0.88);
+  --bg-panel-solid: #111535;
+  --bg-surface: rgba(27, 34, 72, 0.72);
+  --border-subtle: rgba(255, 255, 255, 0.09);
+  --border-prominent: rgba(255, 255, 255, 0.18);
+  --border-accent: rgba(168, 85, 247, 0.5);
+
+  --color-primary: #a855f7;
+  --color-primary-rgb: 168, 85, 247;
+  --color-primary-hover: #c084fc;
+  --color-accent: #6366f1;
+  --color-cyan: #38bdf8;
+  --color-amber: #fbbf24;
+
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-dim: #818cf8;
+  --text-inverse: #080b1e;
+
+  --shadow-window: 0 24px 70px rgba(4, 7, 24, 0.85), 0 0 1px rgba(168, 85, 247, 0.3);
+  --shadow-glow: 0 0 30px rgba(168, 85, 247, 0.25);
+}
+
+[data-theme="night"] .wallpaper-gradient {
+  background: 
+    radial-gradient(circle at 20% 28%, rgba(168, 85, 247, 0.14) 0%, transparent 50%),
+    radial-gradient(circle at 80% 72%, rgba(99, 102, 241, 0.16) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(18, 22, 48, 0.95) 0%, #080b1e 100%);
+}
+
+/* Day Mode (Apple-Style Frosted Pearl & Silver Titanium) */
+[data-theme="day"] {
+  --bg-desktop: #f0f4f9;
+  --bg-panel: rgba(255, 255, 255, 0.9);
+  --bg-panel-solid: #ffffff;
+  --bg-surface: rgba(241, 245, 251, 0.92);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-prominent: rgba(0, 0, 0, 0.14);
+  --border-accent: rgba(37, 99, 235, 0.5);
+
+  --color-primary: #2563eb;
+  --color-primary-rgb: 37, 99, 235;
+  --color-primary-hover: #1d4ed8;
+  --color-accent: #7c3aed;
+  --color-cyan: #0284c7;
+  --color-amber: #d97706;
+
+  --text-main: #0f172a;
+  --text-muted: #334155;
+  --text-dim: #64748b;
+  --text-inverse: #ffffff;
+
+  --shadow-window: 0 20px 55px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.18);
+}
+
+[data-theme="day"] .wallpaper-gradient {
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, #f8fafc 0%, #e2e8f0 100%);
+}
+
+[data-theme="day"] .system-bar {
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="day"] .system-dock-container {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="day"] .dock-item-btn {
+  background: rgba(0, 0, 0, 0.04);
+  color: #0f172a;
+}
+
+[data-theme="day"] .dock-item-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-primary);
+}
+
+[data-theme="day"] .hero-main-name {
+  color: #0f172a;
+}
+
+[data-theme="day"] .hero-main-name span {
+  background: linear-gradient(135deg, #0f172a 30%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="day"] .icon-badge-box {
+  background: linear-gradient(135deg, #ffffff, #f1f5fb);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="day"] .icon-label {
+  text-shadow: none;
+  color: #0f172a;
+}
+
+[data-theme="day"] .system-monitor-card,
+[data-theme="day"] .daily-transmission-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="day"] .folded-corner-prompt {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="day"] .os-window {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="day"] .window-titlebar {
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="day"] .window-tag-badge {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #334155;
+}
+
+[data-theme="day"] .filter-pill {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #334155;
+}
+
+[data-theme="day"] .project-os-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="day"] .vault-metric-card,
+[data-theme="day"] .case-study-card,
+[data-theme="day"] .system-step-card,
+[data-theme="day"] .service-catalog-card,
+[data-theme="day"] .contact-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="day"] .theme-switch-group {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="day"] .player-btn {
+  color: #475569;
+}
+
+[data-theme="day"] .player-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-primary);
+}

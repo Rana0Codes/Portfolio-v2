@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juyel Rana — Personal AI Operating System (Juyel.OS)</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="Official personal operating system of Juyel Rana — Software Developer, AI Systems Builder, and Problem Solver. Explore interactive applications, verified case studies, BachatGuru, utilities, and direct contact.">
+  <meta name="keywords" content="Juyel Rana, Software Developer, Portfolio, Operating System, Flutter, Web Development, AI Tools, BachatGuru, Problem Solver, Kolkata">
+  <meta name="author" content="Juyel Rana">
+  <link rel="canonical" href="https://rana0codes.github.io/Portfolio/">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rana0codes.github.io/Portfolio/">
+  <meta property="og:title" content="Juyel Rana — Personal AI Operating System">
+  <meta property="og:description" content="Explore Juyel Rana's software engineering portfolio through an interactive, multi-window personal operating system.">
+  <meta property="og:image" content="assets/profile-photo.jpg">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@Rana0Codes">
+  <meta name="twitter:title" content="Juyel Rana — Personal AI Operating System">
+  <meta name="twitter:description" content="Explore Juyel Rana's software engineering portfolio through an interactive, multi-window personal operating system.">
+  <meta name="twitter:image" content="assets/profile-photo.jpg">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/os-core.css">
+  <link rel="stylesheet" href="css/os-themes.css">
+  <link rel="stylesheet" href="css/os-windows.css">
+  <link rel="stylesheet" href="css/os-apps.css">
+  <link rel="stylesheet" href="css/os-companion.css">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Juyel Rana",
+    "url": "https://rana0codes.github.io/Portfolio/",
+    "image": "assets/profile-photo.jpg",
+    "jobTitle": "Software Developer",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Self-Employed / Freelance"
+    },
+    "sameAs": [
+      "https://github.com/Rana0Codes",
+      "https://www.linkedin.com/in/juyel-rana/",
+      "https://x.com/Rana0Codes",
+      "https://www.youtube.com/@Rana0Codes",
+      "https://www.instagram.com/rana0codes/"
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <!-- ========================================================================
+       BOOT SCREEN (Skippable)
+       ======================================================================== -->
+  <div class="boot-screen" id="boot-screen" role="region" aria-label="Operating System Boot">
+    <div class="boot-inner">
+      <div class="boot-avatar-ring">
+        <img src="assets/profile-photo.jpg" alt="Juyel Rana" width="76" height="76">
+      </div>
+      <div class="boot-title">JUYEL.OS v1.3</div>
+      <div class="boot-log" id="boot-log">Loading system drivers...</div>
+      <div class="boot-progress-bar">
+        <div class="boot-progress-fill" id="boot-progress"></div>
+      </div>
+      <button class="skip-boot-btn" id="skip-boot">Skip Boot &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       DESKTOP SHELL
+       ======================================================================== -->
+  <div id="desktop-shell">
+    <!-- Ambient Wallpaper Canvas & Mesh -->
+    <div class="desktop-wallpaper">
+      <div class="wallpaper-gradient"></div>
+      <div class="wallpaper-grid"></div>
+      <canvas id="ambient-particles" class="wallpaper-particles"></canvas>
+    </div>
+
+    <!-- ----------------------------------------------------------------------
+         Top System Navigation Bar
+         ---------------------------------------------------------------------- -->
+    <header class="system-bar" role="banner">
+      <div class="system-bar-left">
+        <div class="os-brand" title="Juyel Rana Operating System">
+          <span class="os-logo-dot"></span>
+          <span>Juyel.OS</span>
+        </div>
+
+        <nav class="system-nav-links" aria-label="System Quick Links">
+          <button class="nav-pill-btn" data-open-win="projects">
+            <i class="fas fa-layer-group"></i> Work
+          </button>
+          <button class="nav-pill-btn" data-open-win="results">
+            <i class="fas fa-shield-alt"></i> Proof
+          </button>
+          <button class="nav-pill-btn" data-open-win="resume">
+            <i class="fas fa-road"></i> Journey
+          </button>
+          <button class="nav-pill-btn" data-open-win="contact">
+            <i class="fas fa-paper-plane"></i> Contact
+          </button>
+        </nav>
+      </div>
+
+      <div class="system-bar-center">
+        <button class="search-trigger-btn" id="search-trigger" aria-label="Open Command Search">
+          <i class="fas fa-search"></i>
+          <span>Search Juyel.OS</span>
+          <span class="search-kbd">Ctrl K</span>
+        </button>
+      </div>
+
+      <div class="system-bar-right">
+        <div class="availability-badge" title="Open to engineering roles & freelance">
+          <span class="live-indicator"></span>
+          <span>Available</span>
+        </div>
+
+        <!-- Theme Mode Switcher -->
+        <div class="theme-switch-group" role="radiogroup" aria-label="System Theme">
+          <button class="theme-btn active" data-theme-val="dark" title="Dark Obsidian" aria-label="Dark Theme">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="theme-btn" data-theme-val="night" title="Cosmic Indigo" aria-label="Night Theme">
+            <i class="fas fa-wand-magic-sparkles"></i>
+          </button>
+          <button class="theme-btn" data-theme-val="day" title="Frosted Pearl Day" aria-label="Day Theme">
+            <i class="fas fa-sun"></i>
+          </button>
+        </div>
+
+        <!-- Live Clock in IST -->
+        <div class="system-clock" id="system-clock" aria-live="polite">--:--:-- IST</div>
+      </div>
+    </header>
+
+    <!-- ----------------------------------------------------------------------
+         Desktop Workspace Area
+         ---------------------------------------------------------------------- -->
+    <main class="desktop-space" id="desktop-workspace">
+      <!-- Desktop Application Icons (macOS Squircles) -->
+      <section class="desktop-grid" aria-label="Desktop Applications">
+        <div class="desktop-icon-item" data-app="projects" tabindex="0" role="button" aria-label="Open Projects Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-laptop-code"></i>
+          </div>
+          <span class="icon-label">Projects</span>
+          <span class="icon-subtag">Main Drive</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="results" tabindex="0" role="button" aria-label="Open Results Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <span class="icon-label">Results</span>
+          <span class="icon-subtag">Proof Vault</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="systems" tabindex="0" role="button" aria-label="Open Systems Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <span class="icon-label">Systems</span>
+          <span class="icon-subtag">Process</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="services" tabindex="0" role="button" aria-label="Open Services Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-cogs"></i>
+          </div>
+          <span class="icon-label">Services</span>
+          <span class="icon-subtag">Catalog</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="terminal" tabindex="0" role="button" aria-label="Open Terminal Shell">
+          <div class="icon-badge-box">
+            <i class="fas fa-terminal"></i>
+          </div>
+          <span class="icon-label">Terminal</span>
+          <span class="icon-subtag">CLI Shell</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="founder" tabindex="0" role="button" aria-label="Open Founder Memo">
+          <div class="icon-badge-box">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <span class="icon-label">Founder.txt</span>
+          <span class="icon-subtag">Memo</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="whiteboard" tabindex="0" role="button" aria-label="Open Whiteboard Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-sticky-note"></i>
+          </div>
+          <span class="icon-label">Whiteboard</span>
+          <span class="icon-subtag">Notes</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="browser" tabindex="0" role="button" aria-label="Open RanaNet Browser">
+          <div class="icon-badge-box">
+            <i class="fas fa-compass"></i>
+          </div>
+          <span class="icon-label">RanaNet</span>
+          <span class="icon-subtag">Browser</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="resume" tabindex="0" role="button" aria-label="Open Resume and Journey">
+          <div class="icon-badge-box">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <span class="icon-label">CV / Journey</span>
+          <span class="icon-subtag">Official</span>
+        </div>
+
+        <div class="desktop-icon-item" data-app="contact" tabindex="0" role="button" aria-label="Open Contact Application">
+          <div class="icon-badge-box">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <span class="icon-label">Contact</span>
+          <span class="icon-subtag">Brief</span>
+        </div>
+      </section>
+
+      <!-- Desktop Hero Identity Stage -->
+      <section class="desktop-hero-stage" aria-label="Developer Identity">
+        <div class="hero-profile-row">
+          <div class="hero-avatar-ring">
+            <img src="assets/profile-photo.jpg" alt="Juyel Rana" width="70" height="70">
+          </div>
+          <div class="hero-meta-titles">
+            <div class="hero-tagline-eyebrow">
+              <i class="fas fa-code"></i> Software & Mobile Developer
+            </div>
+            <h1 class="hero-main-name">Hello I'm <span>Juyel Rana</span></h1>
+            <div class="hero-dynamic-descriptor" id="dynamic-descriptor">&gt; Software Developer</div>
+          </div>
+        </div>
+
+        <p class="hero-summary-bio">
+          Developer with experience in building web and mobile applications, focusing on creating real-life utility tools such as expense trackers, video downloaders, and document converters. Actively integrates AI tools into engineering workflows to enhance delivery and code quality.
+        </p>
+
+        <div class="hero-actions-row">
+          <button class="btn-primary" id="hero-explore-projects">
+            <i class="fas fa-folder-open"></i> Enter Portfolio
+          </button>
+          <button class="btn-secondary" id="hero-hire-contact">
+            <i class="fas fa-paper-plane"></i> Hire Me / Brief
+          </button>
+          <a href="assets/cv/CV.pdf" download="Juyel_Rana_CV.pdf" class="btn-secondary" title="Download Official CV">
+            <i class="fas fa-download"></i> CV (PDF)
+          </a>
+        </div>
+
+        <!-- Verified Metrics Strip -->
+        <div class="hero-metrics-strip">
+          <div class="metric-strip-item">
+            <span class="metric-strip-num">50+</span>
+            <span class="metric-strip-label">Accounts Rescued</span>
+          </div>
+          <div class="metric-strip-item">
+            <span class="metric-strip-num">100+</span>
+            <span class="metric-strip-label">Devices Serviced</span>
+          </div>
+          <div class="metric-strip-item">
+            <span class="metric-strip-num">10+</span>
+            <span class="metric-strip-label">Shipped Apps</span>
+          </div>
+          <div class="metric-strip-item">
+            <span class="metric-strip-num">200+</span>
+            <span class="metric-strip-label">GitHub Commits</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Desktop Widgets Column (Right Side) -->
+      <aside class="desktop-widgets-column" aria-label="Desktop Information Hub">
+        <!-- Live System Monitor Widget -->
+        <div class="system-monitor-card">
+          <div class="widget-header">
+            <span class="widget-title"><i class="fas fa-microchip"></i> System Monitor</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: #34d399;">● NOMINAL</span>
+          </div>
+          <div class="pulse-metric-row">
+            <span style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">CPU ACTIVITY</span>
+            <div class="pulse-bar-wrap">
+              <div class="pulse-bar-fill" id="cpu-bar-fill" style="width: 14%;"></div>
+            </div>
+            <span id="cpu-val-text" style="font-family: var(--font-mono); font-size: 11px;">14%</span>
+          </div>
+          <div class="pulse-metric-row">
+            <span style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">MEMORY LOAD</span>
+            <div class="pulse-bar-wrap">
+              <div class="pulse-bar-fill" id="ram-bar-fill" style="width: 36%;"></div>
+            </div>
+            <span id="ram-val-text" style="font-family: var(--font-mono); font-size: 11px;">36%</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-top: 10px; border-top: 1px solid var(--border-subtle); padding-top: 8px;">
+            <span>Location: Kolkata, IN</span>
+            <span>Ping: 24ms</span>
+          </div>
+        </div>
+
+        <!-- Daily Transmission Widget -->
+        <div class="daily-transmission-card">
+          <div class="widget-header">
+            <span class="widget-title"><i class="fas fa-quote-left"></i> Daily Memo</span>
+            <span>v1.3</span>
+          </div>
+          <div class="dt-body" id="daily-quote-text">
+            “Simplicity is prerequisite for reliability.” — Edsger Dijkstra
+          </div>
+          <div class="dt-footer">
+            <button class="quick-sticky-btn" id="quick-sticky-trigger">
+              <i class="fas fa-plus-circle"></i> Quick Sticky Note
+            </button>
+            <span style="color: var(--color-cyan); font-size: 10px; font-family: var(--font-mono);">SYNCED</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Astro-J Companion Mount -->
+      <div id="companion-mount"></div>
+
+      <!-- Folded-Corner Call Prompt (Bottom Right) -->
+      <div class="folded-corner-call" id="folded-corner-call" role="button" aria-label="Book a Call / Project Inquiry">
+        <div class="folded-corner-triangle"></div>
+        <div class="folded-corner-content">
+          <div>HIRE ME</div>
+          <div>START BRIEF &rarr;</div>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           WINDOW MANAGER LAYER (Applications)
+           ==================================================================== -->
+      <div class="os-window-layer" id="window-layer">
+        <!-- 1. Projects Window -->
+        <div class="os-window" id="win-projects" role="dialog" aria-labelledby="title-projects">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-projects">
+              <i class="fas fa-laptop-code"></i> Projects — Main Drive
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">App Store</span>
+            </div>
+          </div>
+          <div class="window-body" id="projects-app-mount"></div>
+        </div>
+
+        <!-- 2. Results & Proof Window -->
+        <div class="os-window" id="win-results" role="dialog" aria-labelledby="title-results">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-results">
+              <i class="fas fa-check-double"></i> Results & Proof Vault
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Verified</span>
+            </div>
+          </div>
+          <div class="window-body" id="results-app-mount"></div>
+        </div>
+
+        <!-- 3. Systems Window -->
+        <div class="os-window" id="win-systems" role="dialog" aria-labelledby="title-systems">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-systems">
+              <i class="fas fa-project-diagram"></i> Systems — Operating Loop
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Workflow</span>
+            </div>
+          </div>
+          <div class="window-body" id="systems-app-mount"></div>
+        </div>
+
+        <!-- 4. Services Window -->
+        <div class="os-window" id="win-services" role="dialog" aria-labelledby="title-services">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-services">
+              <i class="fas fa-cogs"></i> Services & Capabilities
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Offerings</span>
+            </div>
+          </div>
+          <div class="window-body" id="services-app-mount"></div>
+        </div>
+
+        <!-- 5. Terminal Window -->
+        <div class="os-window" id="win-terminal" role="dialog" aria-labelledby="title-terminal">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-terminal">
+              <i class="fas fa-terminal"></i> Terminal — juyel@os:~$
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Bash/Zsh</span>
+            </div>
+          </div>
+          <div class="window-body" id="terminal-app-mount"></div>
+        </div>
+
+        <!-- 6. Founder Memo Window -->
+        <div class="os-window" id="win-founder" role="dialog" aria-labelledby="title-founder">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-founder">
+              <i class="fas fa-file-alt"></i> Founder_Memo.txt
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Read-Only</span>
+            </div>
+          </div>
+          <div class="window-body" id="founder-app-mount"></div>
+        </div>
+
+        <!-- 7. Whiteboard Window -->
+        <div class="os-window" id="win-whiteboard" role="dialog" aria-labelledby="title-whiteboard">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-whiteboard">
+              <i class="fas fa-sticky-note"></i> Whiteboard & Sticky Notes
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Local Canvas</span>
+            </div>
+          </div>
+          <div class="window-body">
+            <div id="whiteboard-toolbar-mount"></div>
+            <div class="whiteboard-canvas-area" id="whiteboard-canvas-mount"></div>
+          </div>
+        </div>
+
+        <!-- 8. RanaNet Browser Window -->
+        <div class="os-window" id="win-browser" role="dialog" aria-labelledby="title-browser">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-browser">
+              <i class="fas fa-compass"></i> RanaNet Internal Browser
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Gateway</span>
+            </div>
+          </div>
+          <div class="window-body" id="browser-app-mount"></div>
+        </div>
+
+        <!-- 9. Resume & Journey Window -->
+        <div class="os-window" id="win-resume" role="dialog" aria-labelledby="title-resume">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-resume">
+              <i class="fas fa-graduation-cap"></i> Resume & Career Journey
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Official CV</span>
+            </div>
+          </div>
+          <div class="window-body" id="resume-app-mount"></div>
+        </div>
+
+        <!-- 10. Contact Window -->
+        <div class="os-window" id="win-contact" role="dialog" aria-labelledby="title-contact">
+          <div class="window-titlebar">
+            <div class="window-controls-traffic">
+              <button class="traffic-btn close" title="Close window" aria-label="Close">&times;</button>
+              <button class="traffic-btn minimize" title="Minimize window" aria-label="Minimize">&minus;</button>
+              <button class="traffic-btn maximize" title="Maximize window" aria-label="Maximize">+</button>
+            </div>
+            <div class="window-title-info" id="title-contact">
+              <i class="fas fa-envelope-open-text"></i> Contact & Project Brief
+            </div>
+            <div class="window-actions-right">
+              <span class="window-tag-badge">Web3Forms</span>
+            </div>
+          </div>
+          <div class="window-body" id="contact-app-mount"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ----------------------------------------------------------------------
+         Bottom System Dock (Apple-Style Glass Shelf)
+         ---------------------------------------------------------------------- -->
+    <footer class="system-dock-container" role="toolbar" aria-label="System Dock">
+      <button class="dock-item-btn" data-app="projects" data-tooltip="Projects (Main Drive)" aria-label="Launch Projects">
+        <i class="fas fa-laptop-code"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="results" data-tooltip="Results & Proof Vault" aria-label="Launch Results">
+        <i class="fas fa-check-double"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="systems" data-tooltip="Systems (Process)" aria-label="Launch Systems">
+        <i class="fas fa-project-diagram"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="services" data-tooltip="Services Catalog" aria-label="Launch Services">
+        <i class="fas fa-cogs"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="terminal" data-tooltip="Terminal Shell" aria-label="Launch Terminal">
+        <i class="fas fa-terminal"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="founder" data-tooltip="Founder Memo" aria-label="Launch Founder Memo">
+        <i class="fas fa-file-alt"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="whiteboard" data-tooltip="Whiteboard & Notes" aria-label="Launch Whiteboard">
+        <i class="fas fa-sticky-note"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="browser" data-tooltip="RanaNet Browser" aria-label="Launch Browser">
+        <i class="fas fa-compass"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="resume" data-tooltip="Curriculum Vitae" aria-label="Launch Resume">
+        <i class="fas fa-graduation-cap"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+      <button class="dock-item-btn" data-app="contact" data-tooltip="Contact & Inquiries" aria-label="Launch Contact">
+        <i class="fas fa-envelope-open-text"></i>
+        <span class="dock-active-dot"></span>
+      </button>
+
+      <div class="dock-divider"></div>
+
+      <!-- Dock Media Player Mount -->
+      <div id="dock-player-mount"></div>
+    </footer>
+  </div>
+
+  <!-- Bootstrapper Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
