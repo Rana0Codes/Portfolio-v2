@@ -357,16 +357,28 @@ export const ownerProfile = {
 
   music: [
     {
-      title: 'Lofi Cyber Dreams',
-      artist: 'Juyel OS Audio',
-      type: 'synth',
-      genre: 'Chillhop / Cyberpunk'
+      title: 'Midnight Lo-Fi',
+      artist: 'Vision Chill & Beats',
+      genre: 'Lofi Chillhop',
+      file: 'assets/audio/midnight-lofi.mp3'
     },
     {
-      title: 'Midnight Coding Session',
-      artist: 'Synthesized Pulse',
-      type: 'synth',
-      genre: 'Ambient Lofi'
+      title: 'Deep Focus Flow',
+      artist: 'Lofi Dreamscape',
+      genre: 'Focus & Study Beats',
+      file: 'assets/audio/deep-focus.mp3'
+    },
+    {
+      title: 'Chasing That Feeling',
+      artist: 'Quincy Larson & Synth Crew',
+      genre: 'Synthwave & Coding Beats',
+      file: 'assets/audio/chasing-feeling.mp3'
+    },
+    {
+      title: 'Cyber Neon Groove',
+      artist: 'Mixkit Electronic Labs',
+      genre: 'Futuristic Electronic',
+      file: 'assets/audio/cyber-groove.mp3'
     }
   ],
 

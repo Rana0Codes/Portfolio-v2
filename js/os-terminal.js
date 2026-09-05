@@ -6,6 +6,7 @@
 import { ownerProfile } from './owner-profile.js';
 import { windowManager } from './os-window-manager.js';
 import { desktopController } from './os-desktop.js';
+import { audioController } from './os-audio.js';
 
 export class TerminalController {
   constructor() {
@@ -24,6 +25,12 @@ export class TerminalController {
       { title: 'Open Contact & Project Brief', category: 'App', action: () => windowManager.openWindow('contact') },
       { title: 'Open Resume & Career Journey', category: 'App', action: () => windowManager.openWindow('resume') },
       { title: 'Open Services Catalog', category: 'App', action: () => windowManager.openWindow('services') },
+
+      // Media & Music
+      { title: 'Media: Play / Pause Music', category: 'Media', action: () => audioController.togglePlay() },
+      { title: 'Media: Next Track', category: 'Media', action: () => audioController.nextTrack() },
+      { title: 'Media: Previous Track', category: 'Media', action: () => audioController.prevTrack() },
+      { title: 'Media: Toggle Mute / Unmute', category: 'Media', action: () => audioController.toggleMute() },
 
       // Themes
       { title: 'Theme: Switch to Dark Obsidian', category: 'Theme', action: () => desktopController.applyTheme('dark') },
