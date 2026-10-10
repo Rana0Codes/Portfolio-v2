@@ -1,250 +1,417 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" width="880" height="280" fill="none">
   <defs>
     <!-- Deep Spatial Background Gradients -->
-    <linearGradient id="deep-space-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06090f" />
-      <stop offset="45%" stop-color="#0b1019" />
-      <stop offset="85%" stop-color="#080c14" />
-      <stop offset="100%" stop-color="#04060a" />
+    <linearGradient id="bg-sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05070e" />
+      <stop offset="40%" stop-color="#080c18" />
+      <stop offset="75%" stop-color="#0e0c1a" />
+      <stop offset="100%" stop-color="#05050a" />
     </linearGradient>
 
-    <!-- Specular Bezel Border Gradient -->
-    <linearGradient id="card-specular-border" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5" />
-      <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.15" />
-      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.35" />
-      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.2" />
+    <!-- Specular Bezel Border -->
+    <linearGradient id="hero-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4500" stop-opacity="0.4" />
+      <stop offset="35%" stop-color="#ffaa00" stop-opacity="0.2" />
+      <stop offset="70%" stop-color="#00f0ff" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#7000ff" stop-opacity="0.35" />
     </linearGradient>
 
-    <!-- Volumetric Atmosphere Blooms -->
-    <radialGradient id="nebula-cyan" cx="82%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.22" />
-      <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.08" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-    </radialGradient>
+    <!-- Fire Gradients -->
+    <linearGradient id="fire-core" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#fff275" />
+      <stop offset="60%" stop-color="#ff5500" />
+      <stop offset="100%" stop-color="#ff0044" stop-opacity="0" />
+    </linearGradient>
 
-    <radialGradient id="nebula-violet" cx="20%" cy="85%" r="50%">
-      <stop offset="0%" stop-color="#7000ff" stop-opacity="0.16" />
-      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.04" />
-      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-    </radialGradient>
-
-    <radialGradient id="quantum-core-glow" cx="50%" cy="50%" r="50%">
+    <radialGradient id="lava-glow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
-      <stop offset="25%" stop-color="#00f0ff" stop-opacity="0.7" />
-      <stop offset="60%" stop-color="#7000ff" stop-opacity="0.2" />
+      <stop offset="30%" stop-color="#ffaa00" stop-opacity="0.75" />
+      <stop offset="70%" stop-color="#ff2200" stop-opacity="0.3" />
       <stop offset="100%" stop-color="#000000" stop-opacity="0" />
     </radialGradient>
 
-    <linearGradient id="poly-edge-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+    <radialGradient id="bird-aura" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
-      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.4" />
+      <stop offset="40%" stop-color="#00f0ff" stop-opacity="0.6" />
+      <stop offset="75%" stop-color="#0066ff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Dragon Skin and Armor Gradients -->
+    <linearGradient id="dragon-armor" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f2438" />
+      <stop offset="50%" stop-color="#121624" />
+      <stop offset="100%" stop-color="#0a0d16" />
     </linearGradient>
 
-    <linearGradient id="poly-edge-violet" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.7" />
-      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#9d4edd" stop-opacity="0.5" />
+    <linearGradient id="dragon-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff5500" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#ffaa00" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#7000ff" stop-opacity="0.2" />
     </linearGradient>
 
-    <!-- Filters for Real Depth and Specular Highlights -->
-    <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+    <!-- Filters -->
+    <filter id="fire-bloom" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="frost-glow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="3.5" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
 
-    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000000" flood-opacity="0.65" />
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.75" />
     </filter>
 
-    <filter id="text-depth" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="#00f0ff" flood-opacity="0.2" />
-    </filter>
-
-    <!-- CSS Keyframe Animations -->
-    <style>
-      @keyframes orbit-cw {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      @keyframes orbit-ccw {
-        0% { transform: rotate(360deg); }
-        100% { transform: rotate(0deg); }
-      }
-
-      @keyframes core-breathe {
-        0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.4)); }
-        50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 22px rgba(0, 240, 255, 0.85)); }
-      }
-
-      @keyframes float-spatial {
+    <!-- CSS Keyframe Choreography (6.0s Game Loop Sequence) -->
+    <style><![CDATA[
+      /* 1. Dragon Breathing and Rearing */
+      @keyframes dragon-cycle {
         0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-7px) rotate(1.5deg); }
+        25% { transform: translateY(3px) rotate(-1deg); } /* Inhale / Crouch */
+        40% { transform: translateY(-5px) rotate(2deg); } /* Roar and Fire blast */
+        70% { transform: translateY(-2px) rotate(1deg); } /* Sustained blast */
+        85% { transform: translateY(0px) rotate(0deg); } /* Recoil and Cooldown */
       }
 
-      @keyframes beacon-ping {
-        0% { r: 4; opacity: 1; }
-        50% { r: 7.5; opacity: 0.3; }
-        100% { r: 4; opacity: 1; }
+      /* 2. Dragon Jaw Opening */
+      @keyframes jaw-roar {
+        0%, 25%, 85%, 100% { transform: rotate(0deg); }
+        35%, 70% { transform: rotate(18deg); } /* Jaw drops open for fire */
       }
 
-      @keyframes grid-drift {
-        0%, 100% { opacity: 0.08; }
-        50% { opacity: 0.16; }
+      /* 3. Dragon Wing Flapping */
+      @keyframes wing-flap {
+        0%, 100% { transform: rotate(0deg) scaleY(1); }
+        30% { transform: rotate(-8deg) scaleY(1.08); }
+        50% { transform: rotate(6deg) scaleY(0.92); }
+        75% { transform: rotate(-5deg) scaleY(1.04); }
       }
 
-      .spatial-gyro-stage {
-        transform-origin: 730px 130px;
-        animation: float-spatial 6.5s ease-in-out infinite;
+      /* 4. Fire Breath Stream (Charges, blasts forward, misses bird, dissipates) */
+      @keyframes fire-eruption {
+        0%, 30% {
+          opacity: 0;
+          transform: scaleX(0.05) scaleY(0.2);
+        }
+        36% {
+          opacity: 0.95;
+          transform: scaleX(0.7) scaleY(0.8);
+        }
+        42%, 65% {
+          opacity: 1;
+          transform: scaleX(1) scaleY(1.05); /* Peak torrent */
+        }
+        75% {
+          opacity: 0.6;
+          transform: scaleX(0.9) scaleY(0.5);
+        }
+        82%, 100% {
+          opacity: 0;
+          transform: scaleX(0.2) scaleY(0.1);
+        }
       }
 
-      .ring-gimbal-1 {
-        transform-origin: 730px 130px;
-        animation: orbit-cw 22s linear infinite;
+      /* 5. Sky Phoenix/Bird Dive, Attack and Evasive Dodge Arc */
+      @keyframes bird-flight-path {
+        0% {
+          /* Emerging from top sky */
+          transform: translate(0px, 0px) rotate(22deg);
+        }
+        28% {
+          /* Swooping down fast towards dragon's lair */
+          transform: translate(-130px, 58px) rotate(32deg);
+        }
+        38% {
+          /* Apex attack point: Sees fire erupting! */
+          transform: translate(-195px, 72px) rotate(15deg);
+        }
+        46% {
+          /* EVASIVE DODGE: Sharp bank upwards and barrel roll, narrowly avoiding flame */
+          transform: translate(-255px, 15px) rotate(-35deg) scale(1.05);
+        }
+        60% {
+          /* Climbing high above the fire plume */
+          transform: translate(-310px, -22px) rotate(-22deg) scale(0.95);
+        }
+        80% {
+          /* Circling back around through sky */
+          transform: translate(-170px, -26px) rotate(-6deg) scale(0.88);
+        }
+        100% {
+          /* Back to entry point */
+          transform: translate(0px, 0px) rotate(22deg);
+        }
       }
 
-      .ring-gimbal-2 {
-        transform-origin: 730px 130px;
-        animation: orbit-ccw 16s linear infinite;
+      /* 6. Bird Wing Flap Cycle */
+      @keyframes bird-wings {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(-0.65); }
       }
 
-      .prism-volumetric-core {
-        transform-origin: 730px 130px;
-        animation: core-breathe 4s ease-in-out infinite;
+      /* 7. Ember Particle Drifts */
+      @keyframes ember-float-1 {
+        0% { transform: translate(0, 0) scale(1); opacity: 0; }
+        40% { opacity: 0.9; }
+        100% { transform: translate(-180px, -55px) scale(0.2); opacity: 0; }
       }
 
-      .live-beacon {
-        animation: beacon-ping 2s ease-in-out infinite;
+      @keyframes ember-float-2 {
+        0% { transform: translate(0, 0) scale(1); opacity: 0; }
+        45% { opacity: 1; }
+        100% { transform: translate(-150px, -85px) scale(0.1); opacity: 0; }
       }
 
-      .perspective-grid-pulse {
-        animation: grid-drift 5s ease-in-out infinite;
+      @keyframes ember-float-3 {
+        0% { transform: translate(0, 0) scale(1); opacity: 0; }
+        50% { opacity: 0.85; }
+        100% { transform: translate(-220px, -35px) scale(0.3); opacity: 0; }
       }
-    </style>
+
+      /* 8. Dragon Throat Lava Heat Pulse */
+      @keyframes lava-pulse {
+        0%, 20% { opacity: 0.3; }
+        35%, 65% { opacity: 1; filter: drop-shadow(0 0 12px #ff4500); }
+        80%, 100% { opacity: 0.35; }
+      }
+
+      /* Class Assignments */
+      .dragon-rig {
+        transform-origin: 750px 220px;
+        animation: dragon-cycle 6s ease-in-out infinite;
+      }
+
+      .dragon-wing {
+        transform-origin: 755px 145px;
+        animation: wing-flap 2.2s ease-in-out infinite;
+      }
+
+      .dragon-jaw {
+        transform-origin: 678px 148px;
+        animation: jaw-roar 6s ease-in-out infinite;
+      }
+
+      .flame-breath {
+        transform-origin: 660px 146px;
+        animation: fire-eruption 6s cubic-bezier(0.25, 0.9, 0.3, 1) infinite;
+      }
+
+      .phoenix-rig {
+        animation: bird-flight-path 6s cubic-bezier(0.38, 0.04, 0.2, 0.98) infinite;
+      }
+
+      .bird-wings-motion {
+        transform-origin: 0px 0px;
+        animation: bird-wings 0.32s ease-in-out infinite;
+      }
+
+      .throat-lava {
+        animation: lava-pulse 6s ease-in-out infinite;
+      }
+
+      .ember-p1 { animation: ember-float-1 3.5s linear infinite; }
+      .ember-p2 { animation: ember-float-2 4.2s linear infinite 0.8s; }
+      .ember-p3 { animation: ember-float-3 3.8s linear infinite 1.5s; }
+    ]]></style>
   </defs>
 
-  <!-- Base Dimensional Canvas with Specular Bezel -->
-  <rect width="880" height="260" rx="16" fill="url(#deep-space-bg)" stroke="url(#card-specular-border)" stroke-width="1.2" filter="url(#subtle-shadow)" />
+  <!-- Container Surface with Specular Bezel -->
+  <rect width="880" height="280" rx="16" fill="url(#bg-sky)" stroke="url(#hero-border)" stroke-width="1.2" filter="url(#card-shadow)" />
 
-  <!-- Volumetric Atmosphere Blobs -->
-  <circle cx="730" cy="130" r="140" fill="url(#nebula-cyan)" />
-  <circle cx="160" cy="220" r="120" fill="url(#nebula-violet)" />
-
-  <!-- Receding 3D Floor Perspective Grid (Creates Genuine Horizon Depth) -->
-  <g class="perspective-grid-pulse" stroke="#00f0ff" stroke-width="0.8">
-    <!-- Horizontal floor rungs converging toward horizon at y=130 -->
-    <line x1="30" y1="250" x2="850" y2="250" stroke-opacity="0.14" />
-    <line x1="60" y1="225" x2="820" y2="225" stroke-opacity="0.10" />
-    <line x1="100" y1="205" x2="780" y2="205" stroke-opacity="0.07" />
-    <line x1="150" y1="190" x2="730" y2="190" stroke-opacity="0.05" />
-    <line x1="220" y1="178" x2="680" y2="178" stroke-opacity="0.03" />
-
-    <!-- Perspective convergence rays pointing to 3D center (730, 130) -->
-    <line x1="50" y1="260" x2="730" y2="130" stroke-opacity="0.06" />
-    <line x1="200" y1="260" x2="730" y2="130" stroke-opacity="0.07" />
-    <line x1="360" y1="260" x2="730" y2="130" stroke-opacity="0.08" />
-    <line x1="520" y1="260" x2="730" y2="130" stroke-opacity="0.09" />
-    <line x1="680" y1="260" x2="730" y2="130" stroke-opacity="0.10" />
-    <line x1="840" y1="260" x2="730" y2="130" stroke-opacity="0.08" />
+  <!-- Background Cyber Mountains and Dark Horizon -->
+  <g opacity="0.35">
+    <!-- Distant Mountain Peaks -->
+    <polygon points="460,280 540,195 620,280" fill="#0c1020" />
+    <polygon points="580,280 670,180 750,280" fill="#0e1326" />
+    <polygon points="700,280 780,190 860,280" fill="#090d1a" />
+    <!-- Floating Dragon Island / Obsidian Cliff -->
+    <path d="M 620,280 L 650,210 L 730,190 L 820,205 L 880,280 Z" fill="#131728" stroke="#1f2640" stroke-width="1" />
   </g>
 
-  <!-- Left Content Area: Modern Obsidian Developer Identity -->
-  <g transform="translate(48, 40)">
-    <!-- Status Pill with Live Beacon -->
+  <!-- Background Stars / Spark Field -->
+  <g fill="#ffffff" opacity="0.4">
+    <circle cx="480" cy="45" r="1" />
+    <circle cx="530" cy="85" r="1.2" opacity="0.8" />
+    <circle cx="610" cy="35" r="0.8" />
+    <circle cx="670" cy="70" r="1.5" opacity="0.6" />
+    <circle cx="790" cy="40" r="1" />
+    <circle cx="830" cy="95" r="1.2" />
+    <circle cx="450" cy="140" r="0.7" />
+    <circle cx="510" cy="170" r="1.3" opacity="0.7" />
+  </g>
+
+  <!-- LEFT COLUMN: Prestigious Developer Identity (No project mention / No launcher) -->
+  <g transform="translate(48, 46)">
+    <!-- Status Pill -->
     <g transform="translate(0, 0)">
-      <rect width="215" height="24" rx="12" fill="rgba(0, 240, 255, 0.06)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1" />
-      <circle cx="14" cy="12" r="4.5" fill="#10b981" class="live-beacon" />
-      <circle cx="14" cy="12" r="2" fill="#ffffff" />
-      <text x="26" y="16" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="10" font-weight="600" letter-spacing="0.6">SYSTEM: ONLINE &#8226; OPEN TO SELECT WORK</text>
+      <rect width="235" height="25" rx="12.5" fill="rgba(255, 69, 0, 0.08)" stroke="rgba(255, 69, 0, 0.3)" stroke-width="1" />
+      <circle cx="14" cy="12.5" r="4.5" fill="#ff4500" />
+      <circle cx="14" cy="12.5" r="2" fill="#ffffff" />
+      <text x="27" y="16.5" fill="#ffaa00" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="10.5" font-weight="600" letter-spacing="0.5">OPEN TO SELECT COLLABORATION</text>
     </g>
 
-    <!-- Display Name & Handle with Depth Filter -->
-    <g transform="translate(0, 58)" filter="url(#text-depth)">
-      <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="900" letter-spacing="-0.6">JUYEL RANA</text>
-      <text x="218" y="0" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="500">/ @Rana0Codes</text>
+    <!-- Name and Handle -->
+    <g transform="translate(0, 62)">
+      <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="36" font-weight="900" letter-spacing="-0.8">JUYEL RANA</text>
+      <text x="232" y="-2" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16.5" font-weight="500">/ @Rana0Codes</text>
     </g>
 
-    <!-- Engineering Specialization -->
-    <text x="0" y="88" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="400">
-      Systems Engineer &amp; Applied AI Architect
+    <!-- Core Title -->
+    <text x="0" y="94" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="500">
+      Full-Stack Developer &amp; Systems Builder
     </text>
 
-    <!-- Architecture Pillars -->
-    <g transform="translate(0, 114)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#64748b">
+    <!-- Professional Attributes (Clean, confident, zero project links) -->
+    <g transform="translate(0, 126)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#94a3b8">
       <text x="0" y="0">
-        <tspan fill="#00f0ff">&gt;</tspan> 0 runtime bloat
-        <tspan dx="14" fill="#00f0ff">&#8226;</tspan><tspan dx="8">in-browser WebGL</tspan>
-        <tspan dx="14" fill="#00f0ff">&#8226;</tspan><tspan dx="8">edge neural vision</tspan>
+        <tspan fill="#ff4500">&gt;</tspan> clean architecture
+        <tspan dx="14" fill="#ffaa00">&#8226;</tspan><tspan dx="8">creative web graphics</tspan>
+      </text>
+      <text x="0" y="24">
+        <tspan fill="#ff4500">&gt;</tspan> high-velocity delivery
+        <tspan dx="14" fill="#00f0ff">&#8226;</tspan><tspan dx="8">robust cloud systems</tspan>
       </text>
     </g>
 
-    <!-- Integrated Interactive 3D Gateway Launcher Pill -->
-    <g transform="translate(0, 138)">
-      <rect width="270" height="28" rx="14" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.35)" stroke-width="1.2" />
-      <!-- Pulsing 3D Icon Spark -->
-      <polygon points="18,8 24,14 18,20 12,14" fill="#00f0ff" filter="url(#neon-glow)" />
-      <circle cx="18" cy="14" r="2" fill="#ffffff" />
-      <text x="32" y="18" fill="#e0f2fe" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.4">
-        🪐 3D PROJECT UNIVERSE <tspan fill="#38bdf8" font-weight="400">&#8226; CLICK TO LAUNCH &#8594;</tspan>
+    <!-- Atmospheric Story Line / Developer Sigil -->
+    <g transform="translate(0, 186)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" fill="#64748b">
+      <text x="0" y="0">
+        <tspan fill="#ff5500">&#9670;</tspan> BATTLE SIMULATION: DRAGON VS PHOENIX &#8226; PROCEDURAL LOOP
       </text>
     </g>
   </g>
 
-  <!-- Right Visual Stage: 3D Spatial Gyroscope & Volumetric Faceted Prism -->
-  <g class="spatial-gyro-stage">
-    <!-- Background Ambient Core Spark -->
-    <circle cx="730" cy="130" r="18" fill="url(#quantum-core-glow)" />
+  <!-- RIGHT COLUMN: THE EPIC DRAGON VS SKY BIRD BATTLE ARENA -->
 
-    <!-- 3D Orbital Ring 1 (Tilted at +60 deg Elevation) -->
-    <g class="ring-gimbal-1">
-      <ellipse cx="730" cy="130" rx="84" ry="34" stroke="url(#poly-edge-cyan)" stroke-width="1.5" stroke-dasharray="6 8" fill="none" />
-      <!-- Orbital Satellite Node 1 -->
-      <circle cx="814" cy="130" r="3.5" fill="#00f0ff" filter="url(#neon-glow)" />
-      <circle cx="646" cy="130" r="3" fill="#38bdf8" />
+  <!-- 1. DRAGON STAGE (Rigged on Obsidian Mountain Cliff at right) -->
+  <g class="dragon-rig">
+    <!-- Lava Glow Behind Dragon Body -->
+    <circle cx="735" cy="180" r="55" fill="url(#lava-glow)" class="throat-lava" opacity="0.4" />
+
+    <!-- Dragon Tail with Armored Dorsal Spikes -->
+    <path d="M 800,225 C 835,235 860,205 845,175 C 835,155 815,165 825,185 C 832,200 810,215 780,210 Z" fill="url(#dragon-armor)" stroke="#ff4500" stroke-width="0.8" stroke-opacity="0.6" />
+    <polygon points="840,165 850,155 845,175" fill="#ff5500" />
+    <polygon points="852,190 865,185 852,202" fill="#ffaa00" />
+
+    <!-- Dragon Large Wing (Flapping behind/above body) -->
+    <g class="dragon-wing">
+      <!-- Wing Struts / Bones -->
+      <path d="M 745,155 C 725,95 780,55 835,70 C 815,95 790,120 760,155 Z" fill="url(#dragon-armor)" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.5" />
+      <!-- Wing Membrane Panels -->
+      <polygon points="760,155 835,70 810,115" fill="rgba(255, 69, 0, 0.15)" />
+      <polygon points="760,155 810,115 785,140" fill="rgba(255, 170, 0, 0.2)" />
+      <!-- Wing Claw Talon -->
+      <polygon points="835,70 844,62 837,74" fill="#ffffff" />
     </g>
 
-    <!-- 3D Orbital Ring 2 (Counter-Rotating Tilted at -45 deg Elevation) -->
-    <g class="ring-gimbal-2">
-      <ellipse cx="730" cy="130" rx="76" ry="30" stroke="url(#poly-edge-violet)" stroke-width="1.5" stroke-dasharray="3 5" fill="none" />
-      <!-- Orbital Satellite Node 2 -->
-      <circle cx="730" cy="100" r="3.5" fill="#7000ff" filter="url(#neon-glow)" />
-      <circle cx="730" cy="160" r="3" fill="#9d4edd" />
+    <!-- Dragon Torso and Muscular Shoulders -->
+    <path d="M 710,160 C 720,135 750,135 775,155 C 800,175 790,225 765,225 C 730,225 700,200 710,160 Z" fill="url(#dragon-armor)" stroke="#2a3352" stroke-width="1.2" />
+
+    <!-- Chest Armor Plates (Glowing Heat Lines) -->
+    <path d="M 718,168 Q 735,178 748,165" stroke="#ff4500" stroke-width="2" fill="none" opacity="0.85" />
+    <path d="M 715,182 Q 732,192 748,178" stroke="#ffaa00" stroke-width="1.8" fill="none" opacity="0.8" />
+    <path d="M 720,196 Q 735,204 748,192" stroke="#ff5500" stroke-width="1.5" fill="none" opacity="0.75" />
+
+    <!-- Front Claw Perched on Rock -->
+    <path d="M 695,215 L 720,205 L 728,225 L 715,228 Z" fill="#0d111c" stroke="#ffaa00" stroke-width="0.8" />
+    <polygon points="695,215 686,218 698,222" fill="#ffffff" />
+    <polygon points="702,223 695,228 707,227" fill="#ffffff" />
+
+    <!-- Dragon Neck (Arching forward aggressively) -->
+    <path d="M 725,150 C 715,120 685,125 675,138 C 690,155 705,160 725,150 Z" fill="url(#dragon-armor)" />
+
+    <!-- Throat Lava Core (Incandescent Fire Energy) -->
+    <path d="M 682,136 Q 695,142 705,134" stroke="#ffffff" stroke-width="3" stroke-linecap="round" filter="url(#fire-bloom)" class="throat-lava" />
+    <path d="M 680,136 Q 695,144 710,135" stroke="#ff5500" stroke-width="5" stroke-linecap="round" filter="url(#fire-bloom)" class="throat-lava" opacity="0.8" />
+
+    <!-- Dragon Head and Horns -->
+    <g transform="translate(640, 105)">
+      <!-- Sweeping Crown Horns -->
+      <path d="M 45,28 C 65,12 85,5 95,2 C 85,15 72,25 55,34 Z" fill="#0e1322" stroke="#ff4500" stroke-width="1" />
+      <path d="M 42,32 C 60,24 75,18 85,16 C 75,26 65,34 50,38 Z" fill="#1c243c" stroke="#ffaa00" stroke-width="0.8" />
+
+      <!-- Head Skull Plate -->
+      <polygon points="15,42 45,28 58,40 38,55 18,52" fill="url(#dragon-armor)" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.4" />
+
+      <!-- Fierce Glowing Amber/Red Eye -->
+      <polygon points="32,38 40,36 36,41" fill="#ffffff" filter="url(#fire-bloom)" />
+      <polygon points="30,38 42,35 38,42" fill="#ff0000" />
+
+      <!-- Snout and Upper Jaw -->
+      <path d="M 15,42 L 38,40 L 40,48 L 10,48 Z" fill="#121626" stroke="#ff4500" stroke-width="0.8" />
+      <!-- Upper Fangs -->
+      <polygon points="14,48 12,54 16,49" fill="#ffffff" />
+      <polygon points="22,48 20,53 24,49" fill="#ffffff" />
+
+      <!-- Animated Lower Jaw (Drops open during flame breath) -->
+      <g class="dragon-jaw">
+        <path d="M 38,48 L 12,51 L 22,58 L 40,54 Z" fill="#0a0d18" stroke="#ff5500" stroke-width="0.8" />
+        <!-- Lower Fangs -->
+        <polygon points="16,51 15,46 19,51" fill="#ffffff" />
+        <polygon points="24,51 23,47 27,51" fill="#ffffff" />
+      </g>
     </g>
+  </g>
 
-    <!-- Equatorial Hexagonal Ticks Cage -->
-    <g opacity="0.4">
-      <polygon points="730,70 782,98 782,162 730,190 678,162 678,98" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1" stroke-dasharray="2 6" fill="rgba(0, 240, 255, 0.02)" />
-    </g>
+  <!-- 2. THE FEROCIOUS BREATHING FIRE BLAST (Unleashed towards the Sky Bird!) -->
+  <g class="flame-breath">
+    <!-- Huge Outer Heat Distortion Cone -->
+    <path d="M 645,145 Q 520,105 380,85 Q 510,175 645,160 Z" fill="rgba(255, 69, 0, 0.22)" filter="url(#fire-bloom)" />
 
-    <!-- Volumetric Faceted 3D Octahedral Diamond Core -->
-    <!-- Distinct Facet Shading creates genuine 3D Isometric Volume -->
-    <g class="prism-volumetric-core">
-      <!-- Facet 1: Top-Left (Specular Highlight) -->
-      <polygon points="730,95 694,130 730,130" fill="rgba(0, 240, 255, 0.45)" stroke="url(#poly-edge-cyan)" stroke-width="1.2" />
+    <!-- Primary Roaring Fire Tongue -->
+    <path d="M 650,146 Q 540,115 410,95 Q 490,140 430,120 Q 550,170 650,154 Z" fill="url(#fire-core)" filter="url(#fire-bloom)" />
 
-      <!-- Facet 2: Top-Right (Ambient Reflected Light) -->
-      <polygon points="730,95 766,130 730,130" fill="rgba(56, 189, 248, 0.28)" stroke="url(#poly-edge-cyan)" stroke-width="1.2" />
+    <!-- Central White-Hot Plasma Jet -->
+    <path d="M 652,148 Q 570,130 460,110 Q 540,148 652,152 Z" fill="#ffffff" filter="url(#fire-bloom)" opacity="0.95" />
 
-      <!-- Facet 3: Bottom-Left (Mid-Tone Shadow) -->
-      <polygon points="730,165 694,130 730,130" fill="rgba(99, 102, 241, 0.35)" stroke="url(#poly-edge-violet)" stroke-width="1.2" />
+    <!-- Fiery Blast Vortex Rings / Shockwaves -->
+    <ellipse cx="580" cy="138" rx="14" ry="24" stroke="#ffea00" stroke-width="2.5" fill="none" opacity="0.8" filter="url(#fire-bloom)" transform="rotate(-15 580 138)" />
+    <ellipse cx="490" cy="120" rx="20" ry="34" stroke="#ff3700" stroke-width="2" fill="none" opacity="0.7" filter="url(#fire-bloom)" transform="rotate(-20 490 120)" />
 
-      <!-- Facet 4: Bottom-Right (Deep Violet Shadow) -->
-      <polygon points="730,165 766,130 730,130" fill="rgba(112, 0, 255, 0.45)" stroke="url(#poly-edge-violet)" stroke-width="1.2" />
+    <!-- Swirling Fire Embers / Particles shooting leftwards -->
+    <circle cx="430" cy="105" r="3.5" fill="#ffffff" class="ember-p1" filter="url(#fire-bloom)" />
+    <circle cx="480" cy="90" r="4" fill="#ffaa00" class="ember-p2" filter="url(#fire-bloom)" />
+    <circle cx="390" cy="115" r="3" fill="#ff3300" class="ember-p3" filter="url(#fire-bloom)" />
+    <circle cx="520" cy="155" r="2.5" fill="#ffea00" class="ember-p1" />
+  </g>
 
-      <!-- Specular Center Ridge Highlight -->
-      <line x1="730" y1="95" x2="730" y2="165" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" filter="url(#neon-glow)" />
-      <line x1="694" y1="130" x2="766" y2="130" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1" />
+  <!-- 3. SKY PHOENIX / CELESTIAL BIRD (Attacks from Sky, Dodges the Flame at apex!) -->
+  <g transform="translate(650, 52)">
+    <g class="phoenix-rig">
+      <!-- Celestial Cyan Aura Glow -->
+      <circle cx="0" cy="0" r="28" fill="url(#bird-aura)" />
 
-      <!-- Quantum Core Spark -->
-      <circle cx="730" cy="130" r="4.5" fill="#ffffff" filter="url(#neon-glow)" />
-    </g>
+      <!-- Bird Wings (High-Frequency Flapping Motion) -->
+      <g class="bird-wings-motion">
+        <!-- Left Wing (Reaching high) -->
+        <path d="M 0,0 C -25,-35 -45,-40 -65,-30 C -50,-15 -25,-8 0,0 Z" fill="#00f0ff" stroke="#ffffff" stroke-width="1" filter="url(#frost-glow)" opacity="0.9" />
+        <path d="M -10,-5 C -35,-30 -50,-32 -60,-22 C -45,-10 -20,-5 -10,-5 Z" fill="#38bdf8" opacity="0.8" />
 
-    <!-- Spatial Coordinate Telemetry Tags -->
-    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="rgba(0, 240, 255, 0.65)">
-      <text x="660" y="52">DEPTH: Z+42.8</text>
-      <text x="764" y="212">SYS: 60FPS</text>
+        <!-- Right Wing (Trailing in 3D perspective) -->
+        <path d="M 0,0 C 15,-28 35,-32 50,-24 C 38,-12 20,-5 0,0 Z" fill="#00c8ff" stroke="#00f0ff" stroke-width="0.8" opacity="0.75" />
+      </g>
+
+      <!-- Sleek Aerodynamic Bird Torso -->
+      <path d="M -18,2 C -6,-6 10,-4 16,4 C 8,12 -8,10 -18,2 Z" fill="#ffffff" filter="url(#frost-glow)" />
+
+      <!-- Crest Feathers -->
+      <polygon points="-12,-3 -24,-12 -16,-1" fill="#00f0ff" />
+      <polygon points="-8,-4 -18,-15 -12,-2" fill="#38bdf8" />
+
+      <!-- Radiant Beak (Diving forward aggressively) -->
+      <polygon points="-18,2 -28,5 -18,7" fill="#ffdd00" filter="url(#fire-bloom)" />
+
+      <!-- Brilliant Eye Spark -->
+      <circle cx="-14" cy="2" r="1.5" fill="#003366" />
+      <circle cx="-15" cy="1.5" r="0.6" fill="#ffffff" />
+
+      <!-- Flowing Twin Plume Tail Streams (Drifting in the wind) -->
+      <path d="M 14,4 C 35,10 55,2 75,12 C 55,18 35,14 14,4 Z" fill="rgba(0, 240, 255, 0.6)" filter="url(#frost-glow)" />
+      <path d="M 12,6 C 30,16 50,12 68,24 C 50,26 30,20 12,6 Z" fill="rgba(112, 0, 255, 0.5)" />
     </g>
   </g>
 </svg>
