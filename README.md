@@ -117,6 +117,13 @@ A built-in shell that responds to developer commands:
 - **Live 4-Bar Equalizer Waves**: Real frequency-driven equalizer bars in the system dock that dance dynamically with the audio track's actual amplitude and spectrum.
 - **Full Player Ergonomics**: Scrubbable progress bar, real-time elapsed/duration timestamp (`mm:ss`), responsive volume slider with `localStorage` memory, and auto-advancing playlist queue.
 
+### 8. 🪐 3D Project Universe & WebGL Interactive Cluster
+- **Three.js WebGL Engine**: 3D celestial cluster where projects and architectural layers exist as orbiting energy spheres in space.
+- **Interactive Orbit & Raycasting**: Full mouse/touch drag camera rotation, wheel zoom, and raycast node selection.
+- **Node Inspector HUD**: Clicking any project node reveals verified technical benchmarks, architecture chips, and direct links.
+- **Dual-View Switcher**: Toggle seamlessly between 3D Celestial Cluster and the Technology Dependency Matrix.
+- **Resilient Fallback**: Graceful degradation to an interactive 2D HTML5 Canvas node network if WebGL is unavailable, plus `prefers-reduced-motion` compliance.
+
 ---
 
 ## 🖼️ Visual Showcase

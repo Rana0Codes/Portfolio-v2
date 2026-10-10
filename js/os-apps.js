@@ -37,9 +37,9 @@ export class AppManager {
       <div class="projects-app-header">
         <div class="projects-filter-bar">
           <button class="filter-pill active" data-cat="all">All Projects (${projects.length})</button>
-          <button class="filter-pill" data-cat="Mobile App">Mobile (Flutter)</button>
+          <button class="filter-pill" data-cat="Machine Learning">AI & Vision</button>
           <button class="filter-pill" data-cat="Web Application">Web Apps</button>
-          <button class="filter-pill" data-cat="Utility Software">Utilities (Python/Java)</button>
+          <button class="filter-pill" data-cat="Mobile App">Mobile (Flutter)</button>
         </div>
       </div>
       <div class="projects-grid-layout" id="projects-card-grid"></div>

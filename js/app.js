@@ -11,6 +11,7 @@ import { whiteboardController } from './os-whiteboard.js';
 import { companionController } from './os-companion.js';
 import { terminalController } from './os-terminal.js';
 import { audioController } from './os-audio.js';
+import { universe3DController } from './os-universe3d.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Register all OS windows with their default dimensions & positions

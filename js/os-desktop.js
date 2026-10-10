@@ -185,6 +185,11 @@ export class DesktopController {
       }, 450);
     };
 
+    if (window.location.search.includes('universe3d') || window.location.hash.includes('universe3d') || window.location.search.includes('app=')) {
+      finishBoot();
+      return;
+    }
+
     if (skipBtn) {
       skipBtn.addEventListener('click', finishBoot);
     }
