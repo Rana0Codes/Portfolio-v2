@@ -299,19 +299,9 @@ Portfolio-v2/
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are always welcome!
+Contributions, issues, and feature requests are welcome!
 
 1. Fork the Project (`https://github.com/Rana0Codes/Portfolio-v2`)
-2. Create your Feature Branch (`git checkout -b feat/NewCapability`)
-3. Commit your Changes (`git commit -m "feat: add NewCapability"`)
-4. Push to the Branch (`git push origin feat/NewCapability`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.ct (`https://github.com/Rana0Codes/juyel-os`)
 2. Create your Feature Branch (`git checkout -b feat/NewCapability`)
 3. Commit your Changes (`git commit -m "feat: add NewCapability"`)
 4. Push to the Branch (`git push origin feat/NewCapability`)
@@ -328,15 +318,12 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 ## 👤 Author & Connect
 
 **Juyel Rana**  
-*Software Developer & AI Systems Builder*
+*Full-Stack Developer & Client-Side AI Builder*
 
 - **GitHub**: [@Rana0Codes](https://github.com/Rana0Codes)
-- **LinkedIn**: [juyel-rana](https://www.linkedin.com/in/juyel-rana/)
-- **YouTube**: [@Rana0Codes](https://www.youtube.com/@Rana0Codes)
-- **X (Twitter)**: [@Rana0Codes](https://x.com/Rana0Codes)
-- **WhatsApp**: [+91 7679862322](https://wa.me/917679862322)
-- **Email**: [ranajuyel460@gmail.com](mailto:ranajuyel460@gmail.com)
+- **LinkedIn**: [linkedin.com/in/juyel-rana](https://www.linkedin.com/in/juyel-rana/)
+- **Live Showcase**: [rana0codes.github.io/Portfolio-v2](https://rana0codes.github.io/Portfolio-v2/)
 
 <div align="center">
-  <sub>Engineered with pure Vanilla JS and VisionOS Glassmorphism. If you like this project, please give it a ⭐️ on GitHub!</sub>
+  <sub>Engineered with pure Vanilla JS and VisionOS Glassmorphism • Updated October 2026</sub>
 </div>
