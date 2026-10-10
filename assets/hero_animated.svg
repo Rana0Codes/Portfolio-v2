@@ -1,176 +1,250 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 240" width="880" height="240" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260" fill="none">
   <defs>
-    <!-- Background Gradients -->
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#080b11" />
-      <stop offset="50%" stop-color="#0d111a" />
-      <stop offset="100%" stop-color="#05070c" />
+    <!-- Deep Spatial Background Gradients -->
+    <linearGradient id="deep-space-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06090f" />
+      <stop offset="45%" stop-color="#0b1019" />
+      <stop offset="85%" stop-color="#080c14" />
+      <stop offset="100%" stop-color="#04060a" />
     </linearGradient>
 
-    <!-- Glowing Accent Gradients -->
-    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00f0ff" />
-      <stop offset="100%" stop-color="#7000ff" />
+    <!-- Specular Bezel Border Gradient -->
+    <linearGradient id="card-specular-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.5" />
+      <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.15" />
+      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.2" />
     </linearGradient>
 
-    <linearGradient id="wireframe-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9" />
-      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.6" />
-      <stop offset="100%" stop-color="#9d4edd" stop-opacity="0.9" />
-    </linearGradient>
-
-    <radialGradient id="ambient-core" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.25" />
-      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.08" />
+    <!-- Volumetric Atmosphere Blooms -->
+    <radialGradient id="nebula-cyan" cx="82%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.22" />
+      <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.08" />
       <stop offset="100%" stop-color="#000000" stop-opacity="0" />
     </radialGradient>
 
-    <!-- Filters -->
-    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur" />
+    <radialGradient id="nebula-violet" cx="20%" cy="85%" r="50%">
+      <stop offset="0%" stop-color="#7000ff" stop-opacity="0.16" />
+      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.04" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="quantum-core-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="25%" stop-color="#00f0ff" stop-opacity="0.7" />
+      <stop offset="60%" stop-color="#7000ff" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="poly-edge-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#00f0ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.4" />
+    </linearGradient>
+
+    <linearGradient id="poly-edge-violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.7" />
+      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#9d4edd" stop-opacity="0.5" />
+    </linearGradient>
+
+    <!-- Filters for Real Depth and Specular Highlights -->
+    <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
 
-    <!-- Styles & Animations -->
+    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+
+    <filter id="text-depth" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="#00f0ff" flood-opacity="0.2" />
+    </filter>
+
+    <!-- CSS Keyframe Animations -->
     <style>
-      @keyframes rotate3d {
-        0% { transform: rotate(0deg) scale(1); }
-        50% { transform: rotate(180deg) scale(1.04); }
-        100% { transform: rotate(360deg) scale(1); }
+      @keyframes orbit-cw {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
-      @keyframes counter-rotate {
+      @keyframes orbit-ccw {
         0% { transform: rotate(360deg); }
         100% { transform: rotate(0deg); }
       }
 
-      @keyframes pulse-ring {
-        0%, 100% { transform: scale(1); opacity: 0.35; }
-        50% { transform: scale(1.08); opacity: 0.75; }
+      @keyframes core-breathe {
+        0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.4)); }
+        50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 22px rgba(0, 240, 255, 0.85)); }
       }
 
-      @keyframes float-node {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-6px); }
+      @keyframes float-spatial {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-7px) rotate(1.5deg); }
       }
 
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.2; }
+      @keyframes beacon-ping {
+        0% { r: 4; opacity: 1; }
+        50% { r: 7.5; opacity: 0.3; }
+        100% { r: 4; opacity: 1; }
       }
 
-      @keyframes scanline {
-        0% { transform: translateY(0); opacity: 0.15; }
-        50% { opacity: 0.4; }
-        100% { transform: translateY(240px); opacity: 0.15; }
+      @keyframes grid-drift {
+        0%, 100% { opacity: 0.08; }
+        50% { opacity: 0.16; }
       }
 
-      .animated-ring-outer {
-        transform-origin: 730px 120px;
-        animation: rotate3d 24s linear infinite;
+      .spatial-gyro-stage {
+        transform-origin: 730px 130px;
+        animation: float-spatial 6.5s ease-in-out infinite;
       }
 
-      .animated-ring-inner {
-        transform-origin: 730px 120px;
-        animation: counter-rotate 16s linear infinite;
+      .ring-gimbal-1 {
+        transform-origin: 730px 130px;
+        animation: orbit-cw 22s linear infinite;
       }
 
-      .animated-core-pulse {
-        transform-origin: 730px 120px;
-        animation: pulse-ring 4s ease-in-out infinite;
+      .ring-gimbal-2 {
+        transform-origin: 730px 130px;
+        animation: orbit-ccw 16s linear infinite;
       }
 
-      .pulse-dot {
-        animation: blink 2s ease-in-out infinite;
+      .prism-volumetric-core {
+        transform-origin: 730px 130px;
+        animation: core-breathe 4s ease-in-out infinite;
       }
 
-      .floating-cluster {
-        animation: float-node 6s ease-in-out infinite;
+      .live-beacon {
+        animation: beacon-ping 2s ease-in-out infinite;
+      }
+
+      .perspective-grid-pulse {
+        animation: grid-drift 5s ease-in-out infinite;
       }
     </style>
   </defs>
 
-  <!-- Container Surface -->
-  <rect width="880" height="240" rx="12" fill="url(#bg-grad)" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+  <!-- Base Dimensional Canvas with Specular Bezel -->
+  <rect width="880" height="260" rx="16" fill="url(#deep-space-bg)" stroke="url(#card-specular-border)" stroke-width="1.2" filter="url(#subtle-shadow)" />
 
-  <!-- Ambient Perspective Grid -->
-  <g stroke="rgba(255,255,255,0.03)" stroke-width="1">
-    <line x1="40" y1="40" x2="840" y2="40" />
-    <line x1="40" y1="90" x2="840" y2="90" />
-    <line x1="40" y1="140" x2="840" y2="140" />
-    <line x1="40" y1="190" x2="840" y2="190" />
-    <line x1="120" y1="20" x2="120" y2="220" />
-    <line x1="280" y1="20" x2="280" y2="220" />
-    <line x1="440" y1="20" x2="440" y2="220" />
-    <line x1="600" y1="20" x2="600" y2="220" />
+  <!-- Volumetric Atmosphere Blobs -->
+  <circle cx="730" cy="130" r="140" fill="url(#nebula-cyan)" />
+  <circle cx="160" cy="220" r="120" fill="url(#nebula-violet)" />
+
+  <!-- Receding 3D Floor Perspective Grid (Creates Genuine Horizon Depth) -->
+  <g class="perspective-grid-pulse" stroke="#00f0ff" stroke-width="0.8">
+    <!-- Horizontal floor rungs converging toward horizon at y=130 -->
+    <line x1="30" y1="250" x2="850" y2="250" stroke-opacity="0.14" />
+    <line x1="60" y1="225" x2="820" y2="225" stroke-opacity="0.10" />
+    <line x1="100" y1="205" x2="780" y2="205" stroke-opacity="0.07" />
+    <line x1="150" y1="190" x2="730" y2="190" stroke-opacity="0.05" />
+    <line x1="220" y1="178" x2="680" y2="178" stroke-opacity="0.03" />
+
+    <!-- Perspective convergence rays pointing to 3D center (730, 130) -->
+    <line x1="50" y1="260" x2="730" y2="130" stroke-opacity="0.06" />
+    <line x1="200" y1="260" x2="730" y2="130" stroke-opacity="0.07" />
+    <line x1="360" y1="260" x2="730" y2="130" stroke-opacity="0.08" />
+    <line x1="520" y1="260" x2="730" y2="130" stroke-opacity="0.09" />
+    <line x1="680" y1="260" x2="730" y2="130" stroke-opacity="0.10" />
+    <line x1="840" y1="260" x2="730" y2="130" stroke-opacity="0.08" />
   </g>
 
-  <!-- Left Content Area: Minimal Identity -->
-  <g transform="translate(50, 42)">
-    <!-- Status Pill -->
+  <!-- Left Content Area: Modern Obsidian Developer Identity -->
+  <g transform="translate(48, 40)">
+    <!-- Status Pill with Live Beacon -->
     <g transform="translate(0, 0)">
-      <rect width="180" height="24" rx="12" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1" />
-      <circle cx="14" cy="12" r="4" fill="#10b981" class="pulse-dot" />
-      <text x="26" y="16" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="10.5" font-weight="600" letter-spacing="0.5">OPEN TO SELECT WORK</text>
+      <rect width="215" height="24" rx="12" fill="rgba(0, 240, 255, 0.06)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1" />
+      <circle cx="14" cy="12" r="4.5" fill="#10b981" class="live-beacon" />
+      <circle cx="14" cy="12" r="2" fill="#ffffff" />
+      <text x="26" y="16" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="10" font-weight="600" letter-spacing="0.6">SYSTEM: ONLINE &#8226; OPEN TO SELECT WORK</text>
     </g>
 
-    <!-- Display Name & Handle -->
-    <text x="0" y="62" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.5">JUYEL RANA</text>
-    <text x="214" y="62" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="500">/ @Rana0Codes</text>
+    <!-- Display Name & Handle with Depth Filter -->
+    <g transform="translate(0, 58)" filter="url(#text-depth)">
+      <text x="0" y="0" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="900" letter-spacing="-0.6">JUYEL RANA</text>
+      <text x="218" y="0" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="500">/ @Rana0Codes</text>
+    </g>
 
-    <!-- Professional Tagline -->
-    <text x="0" y="94" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="400">
-      Software Engineer &#8226; Applied AI &#8226; Interactive Graphics &#8226; Web Systems
+    <!-- Engineering Specialization -->
+    <text x="0" y="88" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="400">
+      Systems Engineer &amp; Applied AI Architect
     </text>
 
-    <!-- Core Principles / Telemetry -->
-    <g transform="translate(0, 122)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#64748b">
+    <!-- Architecture Pillars -->
+    <g transform="translate(0, 114)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#64748b">
       <text x="0" y="0">
         <tspan fill="#00f0ff">&gt;</tspan> 0 runtime bloat
-        <tspan dx="16" fill="#00f0ff">&#8226;</tspan><tspan dx="8">in-browser WebGL</tspan>
-        <tspan dx="16" fill="#00f0ff">&#8226;</tspan><tspan dx="8">verifiable metrics</tspan>
+        <tspan dx="14" fill="#00f0ff">&#8226;</tspan><tspan dx="8">in-browser WebGL</tspan>
+        <tspan dx="14" fill="#00f0ff">&#8226;</tspan><tspan dx="8">edge neural vision</tspan>
+      </text>
+    </g>
+
+    <!-- Integrated Interactive 3D Gateway Launcher Pill -->
+    <g transform="translate(0, 138)">
+      <rect width="270" height="28" rx="14" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.35)" stroke-width="1.2" />
+      <!-- Pulsing 3D Icon Spark -->
+      <polygon points="18,8 24,14 18,20 12,14" fill="#00f0ff" filter="url(#neon-glow)" />
+      <circle cx="18" cy="14" r="2" fill="#ffffff" />
+      <text x="32" y="18" fill="#e0f2fe" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.4">
+        🪐 3D PROJECT UNIVERSE <tspan fill="#38bdf8" font-weight="400">&#8226; CLICK TO LAUNCH &#8594;</tspan>
       </text>
     </g>
   </g>
 
-  <!-- Right Visual Stage: Genuinely Animated 3D Isometric Structure -->
-  <!-- Ambient Core Glow -->
-  <circle cx="730" cy="120" r="95" fill="url(#ambient-core)" />
+  <!-- Right Visual Stage: 3D Spatial Gyroscope & Volumetric Faceted Prism -->
+  <g class="spatial-gyro-stage">
+    <!-- Background Ambient Core Spark -->
+    <circle cx="730" cy="130" r="18" fill="url(#quantum-core-glow)" />
 
-  <g class="floating-cluster">
-    <!-- Outer Orbital Ring with Hash Ticks -->
-    <g class="animated-ring-outer">
-      <circle cx="730" cy="120" r="74" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1.5" stroke-dasharray="4 8" fill="none" />
-      <circle cx="730" cy="46" r="3" fill="#00f0ff" filter="url(#neon-glow)" />
-      <circle cx="730" cy="194" r="3" fill="#9d4edd" filter="url(#neon-glow)" />
-      <circle cx="656" cy="120" r="2.5" fill="#38bdf8" />
-      <circle cx="804" cy="120" r="2.5" fill="#38bdf8" />
+    <!-- 3D Orbital Ring 1 (Tilted at +60 deg Elevation) -->
+    <g class="ring-gimbal-1">
+      <ellipse cx="730" cy="130" rx="84" ry="34" stroke="url(#poly-edge-cyan)" stroke-width="1.5" stroke-dasharray="6 8" fill="none" />
+      <!-- Orbital Satellite Node 1 -->
+      <circle cx="814" cy="130" r="3.5" fill="#00f0ff" filter="url(#neon-glow)" />
+      <circle cx="646" cy="130" r="3" fill="#38bdf8" />
     </g>
 
-    <!-- Inner Counter-Rotating Hexagonal Matrix -->
-    <g class="animated-ring-inner">
-      <polygon points="730,68 775,94 775,146 730,172 685,146 685,94" stroke="url(#wireframe-grad)" stroke-width="1.5" fill="rgba(0, 240, 255, 0.03)" />
-      <!-- Radial spokes -->
-      <line x1="730" y1="120" x2="730" y2="68" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
-      <line x1="730" y1="120" x2="775" y2="94" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
-      <line x1="730" y1="120" x2="775" y2="146" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
-      <line x1="730" y1="120" x2="730" y2="172" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
-      <line x1="730" y1="120" x2="685" y2="146" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
-      <line x1="730" y1="120" x2="685" y2="94" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+    <!-- 3D Orbital Ring 2 (Counter-Rotating Tilted at -45 deg Elevation) -->
+    <g class="ring-gimbal-2">
+      <ellipse cx="730" cy="130" rx="76" ry="30" stroke="url(#poly-edge-violet)" stroke-width="1.5" stroke-dasharray="3 5" fill="none" />
+      <!-- Orbital Satellite Node 2 -->
+      <circle cx="730" cy="100" r="3.5" fill="#7000ff" filter="url(#neon-glow)" />
+      <circle cx="730" cy="160" r="3" fill="#9d4edd" />
     </g>
 
-    <!-- Central Pulsing 3D Diamond Prism -->
-    <g class="animated-core-pulse">
-      <polygon points="730,90 756,120 730,150 704,120" stroke="#00f0ff" stroke-width="2" fill="rgba(15, 23, 42, 0.6)" filter="url(#neon-glow)" />
-      <polygon points="730,90 746,120 730,150 714,120" stroke="rgba(255, 255, 255, 0.7)" stroke-width="1" fill="none" />
-      <!-- Central Energy Spark -->
-      <circle cx="730" cy="120" r="4.5" fill="#ffffff" filter="url(#neon-glow)" />
+    <!-- Equatorial Hexagonal Ticks Cage -->
+    <g opacity="0.4">
+      <polygon points="730,70 782,98 782,162 730,190 678,162 678,98" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1" stroke-dasharray="2 6" fill="rgba(0, 240, 255, 0.02)" />
     </g>
 
-    <!-- Floating Coordinate Telemetry -->
-    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="rgba(0, 240, 255, 0.5)">
-      <text x="668" y="44">X: 42.1</text>
-      <text x="760" y="200">Z: 18.4</text>
+    <!-- Volumetric Faceted 3D Octahedral Diamond Core -->
+    <!-- Distinct Facet Shading creates genuine 3D Isometric Volume -->
+    <g class="prism-volumetric-core">
+      <!-- Facet 1: Top-Left (Specular Highlight) -->
+      <polygon points="730,95 694,130 730,130" fill="rgba(0, 240, 255, 0.45)" stroke="url(#poly-edge-cyan)" stroke-width="1.2" />
+
+      <!-- Facet 2: Top-Right (Ambient Reflected Light) -->
+      <polygon points="730,95 766,130 730,130" fill="rgba(56, 189, 248, 0.28)" stroke="url(#poly-edge-cyan)" stroke-width="1.2" />
+
+      <!-- Facet 3: Bottom-Left (Mid-Tone Shadow) -->
+      <polygon points="730,165 694,130 730,130" fill="rgba(99, 102, 241, 0.35)" stroke="url(#poly-edge-violet)" stroke-width="1.2" />
+
+      <!-- Facet 4: Bottom-Right (Deep Violet Shadow) -->
+      <polygon points="730,165 766,130 730,130" fill="rgba(112, 0, 255, 0.45)" stroke="url(#poly-edge-violet)" stroke-width="1.2" />
+
+      <!-- Specular Center Ridge Highlight -->
+      <line x1="730" y1="95" x2="730" y2="165" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" filter="url(#neon-glow)" />
+      <line x1="694" y1="130" x2="766" y2="130" stroke="rgba(255, 255, 255, 0.6)" stroke-width="1" />
+
+      <!-- Quantum Core Spark -->
+      <circle cx="730" cy="130" r="4.5" fill="#ffffff" filter="url(#neon-glow)" />
+    </g>
+
+    <!-- Spatial Coordinate Telemetry Tags -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="rgba(0, 240, 255, 0.65)">
+      <text x="660" y="52">DEPTH: Z+42.8</text>
+      <text x="764" y="212">SYS: 60FPS</text>
     </g>
   </g>
 </svg>

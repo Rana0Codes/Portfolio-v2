@@ -1,128 +1,178 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 230" width="880" height="230" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 250" width="880" height="250" fill="none">
   <defs>
-    <linearGradient id="bg-activity" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0d1117" />
-      <stop offset="100%" stop-color="#090d13" />
+    <!-- Background Gradients -->
+    <linearGradient id="act-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070a10" />
+      <stop offset="50%" stop-color="#0c1018" />
+      <stop offset="100%" stop-color="#05080e" />
     </linearGradient>
 
-    <linearGradient id="commit-line-grad" x1="100%" y1="0%" x2="0%" y2="0%">
+    <linearGradient id="act-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#7000ff" stop-opacity="0.3" />
+    </linearGradient>
+
+    <linearGradient id="commit-bar-grad" x1="100%" y1="0%" x2="0%" y2="0%">
       <stop offset="0%" stop-color="#238636" />
       <stop offset="100%" stop-color="#3fb950" />
     </linearGradient>
 
-    <filter id="green-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="3" result="blur" />
+    <filter id="green-radar-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
 
+    <filter id="card-depth" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.7" />
+    </filter>
+
     <style>
-      @keyframes pulse-dot {
-        0%, 100% { transform: scale(1); opacity: 0.9; }
-        50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 6px #3fb950); }
+      @keyframes radar-pulse-wave {
+        0% { r: 5; opacity: 0.85; }
+        100% { r: 18; opacity: 0; }
       }
 
-      @keyframes radar-pulse {
-        0% { r: 5; opacity: 0.8; }
-        100% { r: 16; opacity: 0; }
+      @keyframes live-dot-beacon {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(0.9); }
       }
 
-      @keyframes bar-expand {
+      @keyframes commit-vector-grow {
         0% { stroke-dashoffset: 95; }
         100% { stroke-dashoffset: 0; }
       }
 
-      .pulse-target {
-        transform-origin: 575px 115px;
-        animation: pulse-dot 2.5s ease-in-out infinite;
+      .radar-wave-ring {
+        animation: radar-pulse-wave 2.4s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
       }
 
-      .radar-wave {
-        animation: radar-pulse 2.5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+      .beacon-dot {
+        animation: live-dot-beacon 2s ease-in-out infinite;
       }
 
-      .animated-commit-vector {
+      .vector-line {
         stroke-dasharray: 95;
-        animation: bar-expand 1.2s ease-out forwards;
+        animation: commit-vector-grow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
     </style>
   </defs>
 
-  <!-- Container Surface -->
-  <rect width="880" height="230" rx="10" fill="url(#bg-activity)" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+  <!-- Container Surface with Specular Border & Depth -->
+  <rect width="880" height="250" rx="14" fill="url(#act-bg)" stroke="url(#act-border)" stroke-width="1.2" filter="url(#card-depth)" />
 
-  <!-- Divider Line Between Left & Right Panes -->
-  <line x1="440" y1="20" x2="440" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+  <!-- Subtle Ambient Perspective Grid -->
+  <g stroke="rgba(255,255,255,0.02)" stroke-width="1">
+    <line x1="30" y1="50" x2="850" y2="50" />
+    <line x1="30" y1="205" x2="850" y2="205" />
+    <line x1="490" y1="20" x2="490" y2="230" />
+  </g>
 
-  <!-- LEFT PANE: Activity Overview Details & Telemetry -->
+  <!-- Left Column: Dynamic Telemetry & Top Active Repositories -->
   <g transform="translate(36, 28)">
-    <!-- Header -->
-    <text x="0" y="16" fill="#f0f6fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600">Activity overview</text>
+    <!-- Header with Live Synchronized Dot -->
+    <g transform="translate(0, 0)">
+      <circle cx="5" cy="5" r="4.5" fill="#3fb950" class="beacon-dot" />
+      <text x="18" y="9" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="0.4">ACTIVITY OVERVIEW &amp; CODEBASE TELEMETRY</text>
+      <text x="350" y="9" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5">LIVE SYNC</text>
+    </g>
 
-    <!-- Contribution Focus -->
-    <g transform="translate(0, 40)">
-      <!-- Repo Icon -->
-      <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5v-9zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8V1.5z" fill="#7d8590" transform="translate(0, 2)" />
+    <!-- Top Summary Pills -->
+    <g transform="translate(0, 24)">
+      <!-- Pill 1: Repos -->
+      <rect x="0" y="0" width="125" height="22" rx="6" fill="rgba(56, 189, 248, 0.08)" stroke="rgba(56, 189, 248, 0.25)" stroke-width="1" />
+      <text x="8" y="15" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="600">5 ACTIVE REPOS</text>
+
+      <!-- Pill 2: Commits -->
+      <rect x="133" y="0" width="135" height="22" rx="6" fill="rgba(63, 185, 80, 0.08)" stroke="rgba(63, 185, 80, 0.25)" stroke-width="1" />
+      <text x="141" y="15" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="600">27+ COMMITS LOGGED</text>
+
+      <!-- Pill 3: Focus -->
+      <rect x="276" y="0" width="145" height="22" rx="6" fill="rgba(168, 85, 247, 0.08)" stroke="rgba(168, 85, 247, 0.25)" stroke-width="1" />
+      <text x="284" y="15" fill="#c084fc" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="600">FULL-STACK &amp; EDGE AI</text>
+    </g>
+
+    <!-- Dynamic Active Projects Row (Auto-reflects any newly pushed/uploaded code) -->
+    <g transform="translate(0, 62)">
+      <text x="0" y="0" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="600" letter-spacing="0.5">RECENTLY ACTIVE CODEBASES (AUTO-REFLECTED):</text>
       
-      <text x="22" y="13" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5">
-        Contributed to verified core repositories:
-      </text>
-
-      <!-- Active Repos Tags (Cleanly Stacked) -->
-      <g transform="translate(22, 30)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5">
-        <text x="0" y="0" fill="#58a6ff">cv-template</text>
-        <text x="95" y="0" fill="#7d8590">&#8226;</text>
-        <text x="110" y="0" fill="#58a6ff">smart-image-document-detector</text>
-        
-        <text x="0" y="22" fill="#58a6ff">Anime-Recommendation-Generator</text>
-        <text x="240" y="22" fill="#7d8590">&#8226;</text>
-        <text x="255" y="22" fill="#58a6ff">Portfolio-v2</text>
+      <!-- Repo 1: Portfolio-v2 -->
+      <g transform="translate(0, 14)">
+        <circle cx="5" cy="8" r="3.5" fill="#f7df1e" />
+        <text x="16" y="11" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">Portfolio-v2</text>
+        <text x="245" y="11" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">JavaScript</text>
+        <rect x="330" y="0" width="80" height="17" rx="4" fill="rgba(255,255,255,0.04)" />
+        <text x="370" y="12" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" text-anchor="middle">6 commits</text>
+      </g>
+      <!-- Repo 2: Portfolio -->
+      <g transform="translate(0, 40)">
+        <circle cx="5" cy="8" r="3.5" fill="#563d7c" />
+        <text x="16" y="11" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">Portfolio</text>
+        <text x="245" y="11" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">CSS</text>
+        <rect x="330" y="0" width="80" height="17" rx="4" fill="rgba(255,255,255,0.04)" />
+        <text x="370" y="12" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" text-anchor="middle">6 commits</text>
+      </g>
+      <!-- Repo 3: Anime-Recommendation-Generator -->
+      <g transform="translate(0, 66)">
+        <circle cx="5" cy="8" r="3.5" fill="#f7df1e" />
+        <text x="16" y="11" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">Anime-Recommendation-Generator</text>
+        <text x="245" y="11" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">JavaScript</text>
+        <rect x="330" y="0" width="80" height="17" rx="4" fill="rgba(255,255,255,0.04)" />
+        <text x="370" y="12" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" text-anchor="middle">4 commits</text>
+      </g>
+      <!-- Repo 4: smart-image-document-detector -->
+      <g transform="translate(0, 92)">
+        <circle cx="5" cy="8" r="3.5" fill="#38bdf8" />
+        <text x="16" y="11" fill="#e6edf3" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600">smart-image-document-detector</text>
+        <text x="245" y="11" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">Python</text>
+        <rect x="330" y="0" width="80" height="17" rx="4" fill="rgba(255,255,255,0.04)" />
+        <text x="370" y="12" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9.5" text-anchor="middle">2 commits</text>
       </g>
     </g>
 
-    <!-- Verified Metrics Ticker -->
-    <g transform="translate(0, 122)">
-      <rect width="380" height="34" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
-      <circle cx="16" cy="17" r="4" fill="#238636" />
-      <text x="30" y="21" fill="#c9d1d9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">
-        Activity distribution: <tspan fill="#3fb950" font-weight="700">100% Commits</tspan>
-      </text>
-    </g>
+    <!-- Footer Note -->
+    <text x="0" y="186" fill="#484f58" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9">
+      Telemetry synced via GitHub Actions &#8226; Reflects all active commits &amp; projects
+    </text>
   </g>
 
-  <!-- RIGHT PANE: 4-Axis Activity Overview Crosshair Chart -->
-  <!-- Crosshair Center: cx = 660, cy = 115 -->
-  <g>
-    <!-- Vertical Axis: Code review (top) to Pull requests (bottom) -->
-    <line x1="660" y1="42" x2="660" y2="188" stroke="#30363d" stroke-width="1.5" stroke-linecap="round" />
-    
-    <!-- Horizontal Axis: Commits (left) to Issues (right) -->
-    <line x1="565" y1="115" x2="755" y2="115" stroke="#30363d" stroke-width="1.5" stroke-linecap="round" />
+  <!-- Right Column: 4-Axis Activity Overview Crosshair Quadrant -->
+  <g id="activity-crosshair-stage">
+    <!-- Center Point: (680, 125) -->
+    <!-- Background Circle Matrix Rings -->
+    <circle cx="680" cy="125" r="75" stroke="#21262d" stroke-width="1" stroke-dasharray="2 4" fill="rgba(13, 17, 23, 0.4)" />
+    <circle cx="680" cy="125" r="45" stroke="#30363d" stroke-width="1" stroke-dasharray="3 3" fill="none" />
+    <circle cx="680" cy="125" r="18" stroke="#30363d" stroke-width="1" fill="none" />
 
-    <!-- Crosshair Center Tick -->
-    <circle cx="660" cy="115" r="2.5" fill="#484f58" />
+    <!-- 4 Axes Crosshair Lines -->
+    <!-- Vertical: Code review (top) to Pull requests (bottom) -->
+    <line x1="680" y1="42" x2="680" y2="208" stroke="#30363d" stroke-width="1.5" stroke-linecap="round" />
+    <!-- Horizontal: Commits (left) to Issues (right) -->
+    <line x1="575" y1="125" x2="785" y2="125" stroke="#30363d" stroke-width="1.5" stroke-linecap="round" />
+
+    <!-- Center Tick -->
+    <circle cx="680" cy="125" r="2.5" fill="#484f58" />
 
     <!-- Axis Labels -->
     <!-- Top: Code review -->
-    <text x="660" y="32" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle">Code review</text>
+    <text x="680" y="32" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle">Code review</text>
 
     <!-- Bottom: Pull requests -->
-    <text x="660" y="204" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle">Pull requests</text>
+    <text x="680" y="222" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle">Pull requests</text>
 
     <!-- Right: Issues -->
-    <text x="768" y="119" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="start">Issues</text>
+    <text x="795" y="129" fill="#7d8590" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="start">Issues</text>
 
     <!-- Left: 100% Commits -->
-    <text x="535" y="112" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" font-weight="700" text-anchor="end">100%</text>
-    <text x="535" y="126" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="end">Commits</text>
+    <text x="550" y="122" fill="#3fb950" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" font-weight="700" text-anchor="end">100%</text>
+    <text x="550" y="136" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" text-anchor="end">Commits</text>
 
-    <!-- The 100% Commits Vector (Extends from center 660 to left 575) -->
-    <line x1="660" y1="115" x2="575" y2="115" stroke="url(#commit-line-grad)" stroke-width="2.5" stroke-linecap="round" class="animated-commit-vector" />
+    <!-- The 100% Commits Vector Line (Center 680 to Left 585) -->
+    <line x1="680" y1="125" x2="585" y2="125" stroke="url(#commit-bar-grad)" stroke-width="2.8" stroke-linecap="round" class="vector-line" />
 
-    <!-- Animated Radar Pulse Rings at Commit Node (x = 575, y = 115) -->
-    <circle cx="575" cy="115" r="5" stroke="#3fb950" stroke-width="1.5" fill="none" class="radar-wave" />
-    
-    <!-- Target Point -->
-    <circle cx="575" cy="115" r="4.5" fill="#3fb950" stroke="#0d1117" stroke-width="1.5" filter="url(#green-glow)" />
-    <circle cx="575" cy="115" r="2" fill="#ffffff" />
+    <!-- Pulsing Radar Rings at Commit Node (x = 585, y = 125) -->
+    <circle cx="585" cy="125" r="5" stroke="#3fb950" stroke-width="1.5" fill="none" class="radar-wave-ring" />
+    <circle cx="585" cy="125" r="4.5" fill="#3fb950" stroke="#070a10" stroke-width="1.5" filter="url(#green-radar-glow)" />
+    <circle cx="585" cy="125" r="2" fill="#ffffff" />
   </g>
 </svg>
