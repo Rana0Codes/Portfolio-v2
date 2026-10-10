@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 240" width="880" height="240" fill="none">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080b11" />
+      <stop offset="50%" stop-color="#0d111a" />
+      <stop offset="100%" stop-color="#05070c" />
+    </linearGradient>
+
+    <!-- Glowing Accent Gradients -->
+    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#7000ff" />
+    </linearGradient>
+
+    <linearGradient id="wireframe-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#9d4edd" stop-opacity="0.9" />
+    </linearGradient>
+
+    <radialGradient id="ambient-core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.25" />
+      <stop offset="70%" stop-color="#7000ff" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Filters -->
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Styles & Animations -->
+    <style>
+      @keyframes rotate3d {
+        0% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.04); }
+        100% { transform: rotate(360deg) scale(1); }
+      }
+
+      @keyframes counter-rotate {
+        0% { transform: rotate(360deg); }
+        100% { transform: rotate(0deg); }
+      }
+
+      @keyframes pulse-ring {
+        0%, 100% { transform: scale(1); opacity: 0.35; }
+        50% { transform: scale(1.08); opacity: 0.75; }
+      }
+
+      @keyframes float-node {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+      }
+
+      @keyframes scanline {
+        0% { transform: translateY(0); opacity: 0.15; }
+        50% { opacity: 0.4; }
+        100% { transform: translateY(240px); opacity: 0.15; }
+      }
+
+      .animated-ring-outer {
+        transform-origin: 730px 120px;
+        animation: rotate3d 24s linear infinite;
+      }
+
+      .animated-ring-inner {
+        transform-origin: 730px 120px;
+        animation: counter-rotate 16s linear infinite;
+      }
+
+      .animated-core-pulse {
+        transform-origin: 730px 120px;
+        animation: pulse-ring 4s ease-in-out infinite;
+      }
+
+      .pulse-dot {
+        animation: blink 2s ease-in-out infinite;
+      }
+
+      .floating-cluster {
+        animation: float-node 6s ease-in-out infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- Container Surface -->
+  <rect width="880" height="240" rx="12" fill="url(#bg-grad)" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+
+  <!-- Ambient Perspective Grid -->
+  <g stroke="rgba(255,255,255,0.03)" stroke-width="1">
+    <line x1="40" y1="40" x2="840" y2="40" />
+    <line x1="40" y1="90" x2="840" y2="90" />
+    <line x1="40" y1="140" x2="840" y2="140" />
+    <line x1="40" y1="190" x2="840" y2="190" />
+    <line x1="120" y1="20" x2="120" y2="220" />
+    <line x1="280" y1="20" x2="280" y2="220" />
+    <line x1="440" y1="20" x2="440" y2="220" />
+    <line x1="600" y1="20" x2="600" y2="220" />
+  </g>
+
+  <!-- Left Content Area: Minimal Identity -->
+  <g transform="translate(50, 42)">
+    <!-- Status Pill -->
+    <g transform="translate(0, 0)">
+      <rect width="180" height="24" rx="12" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1" />
+      <circle cx="14" cy="12" r="4" fill="#10b981" class="pulse-dot" />
+      <text x="26" y="16" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="10.5" font-weight="600" letter-spacing="0.5">OPEN TO SELECT WORK</text>
+    </g>
+
+    <!-- Display Name & Handle -->
+    <text x="0" y="62" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.5">JUYEL RANA</text>
+    <text x="214" y="62" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" font-weight="500">/ @Rana0Codes</text>
+
+    <!-- Professional Tagline -->
+    <text x="0" y="94" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14.5" font-weight="400">
+      Software Engineer &#8226; Applied AI &#8226; Interactive Graphics &#8226; Web Systems
+    </text>
+
+    <!-- Core Principles / Telemetry -->
+    <g transform="translate(0, 122)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#64748b">
+      <text x="0" y="0">
+        <tspan fill="#00f0ff">&gt;</tspan> 0 runtime bloat
+        <tspan dx="16" fill="#00f0ff">&#8226;</tspan><tspan dx="8">in-browser WebGL</tspan>
+        <tspan dx="16" fill="#00f0ff">&#8226;</tspan><tspan dx="8">verifiable metrics</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Right Visual Stage: Genuinely Animated 3D Isometric Structure -->
+  <!-- Ambient Core Glow -->
+  <circle cx="730" cy="120" r="95" fill="url(#ambient-core)" />
+
+  <g class="floating-cluster">
+    <!-- Outer Orbital Ring with Hash Ticks -->
+    <g class="animated-ring-outer">
+      <circle cx="730" cy="120" r="74" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1.5" stroke-dasharray="4 8" fill="none" />
+      <circle cx="730" cy="46" r="3" fill="#00f0ff" filter="url(#neon-glow)" />
+      <circle cx="730" cy="194" r="3" fill="#9d4edd" filter="url(#neon-glow)" />
+      <circle cx="656" cy="120" r="2.5" fill="#38bdf8" />
+      <circle cx="804" cy="120" r="2.5" fill="#38bdf8" />
+    </g>
+
+    <!-- Inner Counter-Rotating Hexagonal Matrix -->
+    <g class="animated-ring-inner">
+      <polygon points="730,68 775,94 775,146 730,172 685,146 685,94" stroke="url(#wireframe-grad)" stroke-width="1.5" fill="rgba(0, 240, 255, 0.03)" />
+      <!-- Radial spokes -->
+      <line x1="730" y1="120" x2="730" y2="68" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+      <line x1="730" y1="120" x2="775" y2="94" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+      <line x1="730" y1="120" x2="775" y2="146" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+      <line x1="730" y1="120" x2="730" y2="172" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+      <line x1="730" y1="120" x2="685" y2="146" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+      <line x1="730" y1="120" x2="685" y2="94" stroke="rgba(0, 240, 255, 0.3)" stroke-width="1" />
+    </g>
+
+    <!-- Central Pulsing 3D Diamond Prism -->
+    <g class="animated-core-pulse">
+      <polygon points="730,90 756,120 730,150 704,120" stroke="#00f0ff" stroke-width="2" fill="rgba(15, 23, 42, 0.6)" filter="url(#neon-glow)" />
+      <polygon points="730,90 746,120 730,150 714,120" stroke="rgba(255, 255, 255, 0.7)" stroke-width="1" fill="none" />
+      <!-- Central Energy Spark -->
+      <circle cx="730" cy="120" r="4.5" fill="#ffffff" filter="url(#neon-glow)" />
+    </g>
+
+    <!-- Floating Coordinate Telemetry -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="9" fill="rgba(0, 240, 255, 0.5)">
+      <text x="668" y="44">X: 42.1</text>
+      <text x="760" y="200">Z: 18.4</text>
+    </g>
+  </g>
+</svg>

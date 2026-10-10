@@ -405,8 +405,7 @@ helping real people solve acute technical crises.
 - Seeking an impactful engineering role or high-velocity team collaboration.
 
 ---
-// Direct inquiries: ranajuyel460@gmail.com
-// WhatsApp: +91 7679862322
+// Direct inquiries via Portfolio Contact form or LinkedIn
       </div>
     `;
   }

@@ -17,7 +17,7 @@
   <img src="assets/screenshots/desktop-hero.png" alt="Portfolio v2 Desktop Preview" width="95%" style="border-radius: 12px; box-shadow: 0 25px 70px rgba(0,0,0,0.6);" />
 </p>
 
-### [⚡ Launch Live Preview](https://rana0codes.github.io/Portfolio-v2/) • [Explore Projects](#-applications-catalog) • [Report Issue](https://github.com/Rana0Codes/Portfolio-v2/issues) • [Contact Juyel](mailto:ranajuyel460@gmail.com)
+### [⚡ Launch Live Preview](https://rana0codes.github.io/Portfolio-v2/) • [Explore Projects](#-applications-catalog) • [Report Issue](https://github.com/Rana0Codes/Portfolio-v2/issues) • [LinkedIn Connect](https://www.linkedin.com/in/juyel-rana/)
 
 </div>
 
