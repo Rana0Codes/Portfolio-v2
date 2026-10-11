@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dragon vs Bird — Cinematic Battle Arena</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #06080e;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #hero-container {
+      position: relative;
+      width: 880px;
+      height: 280px;
+      background: radial-gradient(circle at 75% 50%, #0d1222 0%, #06080e 70%, #030408 100%);
+      border-radius: 16px;
+      border: 1.2px solid rgba(255, 69, 0, 0.35);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    #dragon-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+    }
+    #ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      padding: 38px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .hero-info-card {
+      max-width: 360px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      background: rgba(255, 69, 0, 0.08);
+      border: 1px solid rgba(255, 69, 0, 0.35);
+      font-family: monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #ffaa00;
+      letter-spacing: 0.5px;
+      width: fit-content;
+      margin-bottom: 12px;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ff4500;
+      box-shadow: 0 0 8px #ff4500;
+    }
+    .dev-name {
+      font-size: 34px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .dev-name span {
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: 500;
+      color: #64748b;
+      margin-left: 8px;
+    }
+    .dev-title {
+      font-size: 14.5px;
+      color: #cbd5e1;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .dev-tags {
+      font-family: monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .dev-tags strong { color: #ff5500; }
+    .dev-tags span { color: #00f0ff; }
+    .state-telemetry {
+      position: absolute;
+      bottom: 18px;
+      left: 48px;
+      font-family: monospace;
+      font-size: 9.5px;
+      color: #64748b;
+    }
+    .state-telemetry strong {
+      color: #ffaa00;
+    }
+    #loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffaa00;
+      font-family: monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+      z-index: 10;
+      transition: opacity 0.3s;
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../js/vendor/three.module.js",
+      "three/addons/": "../js/vendor/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="hero-container">
+    <div id="loading-indicator">LOADING 3D ASSETS...</div>
+    <canvas id="dragon-canvas" width="880" height="280"></canvas>
+    <div id="ui-overlay">
+      <div class="hero-info-card">
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          OPEN TO SELECT COLLABORATION
+        </div>
+        <h1 class="dev-name">JUYEL RANA <span>/ @Rana0Codes</span></h1>
+        <p class="dev-title">Full-Stack Developer &amp; Systems Builder</p>
+        <div class="dev-tags">
+          &gt; <strong>clean architecture</strong> &bull; creative 3D web graphics<br>
+          &gt; high-velocity delivery &bull; <span>robust cloud systems</span>
+        </div>
+      </div>
+      <div class="state-telemetry" id="state-label">
+        ◆ SCENE SIMULATION: <strong id="current-state-text">STATE A: DRAGON IDLE</strong>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="dragon-scene.js"></script>
+</body>
+</html>
