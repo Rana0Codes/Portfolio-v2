@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dragon vs Bird — Cinematic Battle Arena</title>
+  <title>Rana0Codes — 3D Dragon Guardian &amp; Interactive Showcase</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -20,9 +20,9 @@
       position: relative;
       width: 880px;
       height: 280px;
-      background: radial-gradient(circle at 75% 50%, #0d1222 0%, #06080e 70%, #030408 100%);
+      background: radial-gradient(circle at 75% 50%, #0c1224 0%, #06080e 70%, #030408 100%);
       border-radius: 16px;
-      border: 1.2px solid rgba(255, 69, 0, 0.35);
+      border: 1.2px solid rgba(245, 158, 11, 0.35);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
@@ -46,10 +46,10 @@
       padding: 38px 44px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
     }
     .hero-info-card {
-      max-width: 360px;
+      max-width: 380px;
     }
     .status-pill {
       display: inline-flex;
@@ -57,12 +57,12 @@
       gap: 7px;
       padding: 4px 12px;
       border-radius: 12px;
-      background: rgba(255, 69, 0, 0.08);
-      border: 1px solid rgba(255, 69, 0, 0.35);
-      font-family: monospace;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 10.5px;
       font-weight: 600;
-      color: #ffaa00;
+      color: #fbbf24;
       letter-spacing: 0.5px;
       width: fit-content;
       margin-bottom: 12px;
@@ -71,8 +71,8 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #ff4500;
-      box-shadow: 0 0 8px #ff4500;
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
     }
     .dev-name {
       font-size: 34px;
@@ -80,10 +80,10 @@
       color: #ffffff;
       letter-spacing: -0.6px;
       line-height: 1.1;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .dev-name span {
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 15px;
       font-weight: 500;
       color: #64748b;
@@ -93,34 +93,23 @@
       font-size: 14.5px;
       color: #cbd5e1;
       font-weight: 500;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .dev-tags {
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 11px;
       color: #94a3b8;
       line-height: 1.6;
     }
-    .dev-tags strong { color: #ff5500; }
-    .dev-tags span { color: #00f0ff; }
-    .state-telemetry {
-      position: absolute;
-      bottom: 18px;
-      left: 48px;
-      font-family: monospace;
-      font-size: 9.5px;
-      color: #64748b;
-    }
-    .state-telemetry strong {
-      color: #ffaa00;
-    }
+    .dev-tags strong { color: #f59e0b; }
+    .dev-tags span { color: #38bdf8; }
     #loading-indicator {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #ffaa00;
-      font-family: monospace;
+      color: #f59e0b;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
       letter-spacing: 1px;
       z-index: 10;
@@ -139,7 +128,7 @@
 </head>
 <body>
   <div id="hero-container">
-    <div id="loading-indicator">LOADING 3D ASSETS...</div>
+    <div id="loading-indicator">INITIALIZING 3D GUARDIAN...</div>
     <canvas id="dragon-canvas" width="880" height="280"></canvas>
     <div id="ui-overlay">
       <div class="hero-info-card">
@@ -153,9 +142,6 @@
           &gt; <strong>clean architecture</strong> &bull; creative 3D web graphics<br>
           &gt; high-velocity delivery &bull; <span>robust cloud systems</span>
         </div>
-      </div>
-      <div class="state-telemetry" id="state-label">
-        ◆ SCENE SIMULATION: <strong id="current-state-text">STATE A: DRAGON IDLE</strong>
       </div>
     </div>
   </div>

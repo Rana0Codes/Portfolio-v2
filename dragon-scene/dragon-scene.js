@@ -1,85 +1,206 @@
 import * as THREE from 'three';
+window.THREE = THREE;
 import { GLTFLoader } from 'three/addons/GLTFLoader.js';
 
-// --- CONFIGURATION & CONSTANTS ---
-const LOOP_DURATION = 8.0; // 8.0 seconds deterministic cinematic loop
+// --- CONFIGURATION & CALIBRATED DIMENSIONS ---
+// Continuous deterministic flight loop: exactly 2.4 seconds per wing beat cycle
+const FLIGHT_CYCLE = 2.4;
 const CANVAS_WIDTH = 880;
 const CANVAS_HEIGHT = 280;
 
-// Arena Coordinates (Centered in right 60% of canvas, leaving left 40% pristine for developer text)
-const DRAGON_POS = new THREE.Vector3(2.35, -0.32, 0.1);
-const PERCH_LAND_POS = new THREE.Vector3(0.35, 0.22, 0.4);
-const BIRD_START_POS = new THREE.Vector3(-0.6, 2.4, -0.4);
-const BIRD_ESCAPE_APEX = new THREE.Vector3(-0.1, 1.65, 0.5);
-const BIRD_ESCAPE_END = new THREE.Vector3(1.2, 1.75, 0.2);
+// Dragon placement: perfectly framed on the right side
+// Generous margins: >50px from top, bottom, and right edge at all cycle extrema
+const DRAGON_BASE_POS = new THREE.Vector3(1.88, -0.46, 0.0);
+const DRAGON_SCALE = 0.45;
+const DRAGON_BASE_ROTY = -1.18; // Dynamic 3/4 angle facing viewer
+const DRAGON_BASE_ROTX = 0.30;  // Forward-leaning predatory aerodynamic flight pitch
 
 let scene, camera, renderer;
-let dragonModel, birdModel;
-let dragonMixer, birdMixer;
-let dragonClips = {}, birdClipAction;
-let dragonHeadBone = null, dragonNeckBone = null, dragonSnoutBone = null;
-let fireLight, impactLight, ambientLight, moonLight, warmKey;
-
-// Fire & Particle Objects
-let mouthGlowSprite, branchScorchMesh;
-let fireSpriteGroup, fireSprites = [];
-let impactFireSprites = [];
-let sparkSpriteGroup, sparkSprites = [];
-let smokeSpriteGroup, smokeSprites = [];
-
+let dragonModel = null;
+let dragonBones = {};
 let isAssetsLoaded = false;
 let globalTime = 0.0;
 let isManualTime = false;
 
-// Procedural Canvas Textures
-function createFlameTexture() {
+// Lighting references
+let keyLight, rimLight, ambientLight, fillLight, bounceLight;
+
+// --- PROCEDURAL PBR TEXTURE GENERATION ---
+// 1. Organic Interlocking Dragon Scales Bump Map
+function createDragonScalesTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 128;
-  canvas.height = 128;
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
-  const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-  grad.addColorStop(0.2, 'rgba(255, 235, 120, 0.95)');
-  grad.addColorStop(0.45, 'rgba(255, 120, 10, 0.85)');
-  grad.addColorStop(0.7, 'rgba(220, 40, 0, 0.45)');
-  grad.addColorStop(0.9, 'rgba(120, 10, 0, 0.15)');
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 128, 128);
+
+  // Base mid-tone gray for bump neutral
+  ctx.fillStyle = '#808080';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Draw hexagonal/cellular reptilian scale grid
+  const scaleSize = 16;
+  for (let y = -scaleSize; y < 512 + scaleSize; y += scaleSize * 1.5) {
+    const rowOffset = (Math.floor(y / (scaleSize * 1.5)) % 2) * (scaleSize * 1.732 / 2);
+    for (let x = -scaleSize; x < 512 + scaleSize; x += scaleSize * 1.732) {
+      const cx = x + rowOffset;
+      const cy = y;
+
+      // Convex scale gradient (bright peak in center, dark rim crevice)
+      const grad = ctx.createRadialGradient(cx, cy, 1, cx, cy, scaleSize * 0.85);
+      grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.85)');
+      grad.addColorStop(0.5, 'rgba(200, 200, 200, 0.45)');
+      grad.addColorStop(0.85, 'rgba(128, 128, 128, 0.0)');
+      grad.addColorStop(1.0, 'rgba(40, 40, 40, 0.7)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, scaleSize * 0.85, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
   const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(8, 8);
   tex.needsUpdate = true;
   return tex;
 }
 
-function createSmokeTexture() {
+// 2. Leathery Wing Membrane Texture with Fibrous Struts
+function createWingMembraneTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 128;
-  canvas.height = 128;
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
-  const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grad.addColorStop(0, 'rgba(90, 80, 80, 0.7)');
-  grad.addColorStop(0.4, 'rgba(60, 50, 50, 0.4)');
-  grad.addColorStop(0.8, 'rgba(30, 25, 25, 0.15)');
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 128, 128);
+
+  ctx.fillStyle = '#7a7a7a';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Draw striated tension folds along wing membrane
+  ctx.strokeStyle = 'rgba(220, 220, 220, 0.25)';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 40; i++) {
+    const yStart = (i * 24) % 512;
+    ctx.beginPath();
+    ctx.moveTo(0, yStart);
+    ctx.bezierCurveTo(
+      150, yStart + Math.sin(i) * 30,
+      350, yStart - Math.cos(i) * 30,
+      512, (yStart + 60) % 512
+    );
+    ctx.stroke();
+  }
+
+  // Crevice shadows
+  ctx.strokeStyle = 'rgba(30, 30, 30, 0.35)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 35; i++) {
+    const yStart = (i * 31) % 512;
+    ctx.beginPath();
+    ctx.moveTo(0, yStart + 6);
+    ctx.bezierCurveTo(
+      160, yStart + 6 + Math.sin(i) * 30,
+      360, yStart + 6 - Math.cos(i) * 30,
+      512, (yStart + 66) % 512
+    );
+    ctx.stroke();
+  }
+
   const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(4, 4);
   tex.needsUpdate = true;
   return tex;
 }
 
-function createSparkTexture() {
+// 3. Volcanic Basalt Rock Texture
+function createBasaltRockTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
+  canvas.width = 512;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d');
-  const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
-  grad.addColorStop(0.3, 'rgba(255, 240, 150, 0.95)');
-  grad.addColorStop(0.6, 'rgba(255, 170, 20, 0.55)');
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 64, 64);
+
+  ctx.fillStyle = '#606060';
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Horizontal geological strata
+  for (let y = 0; y < 512; y += 4) {
+    const noise = (Math.random() - 0.5) * 60;
+    const v = Math.min(255, Math.max(0, 100 + noise));
+    ctx.fillStyle = `rgb(${v}, ${v}, ${v})`;
+    ctx.fillRect(0, y, 512, 3);
+  }
+
+  // Vertical rock fissures & cracks
+  ctx.strokeStyle = 'rgba(20, 20, 20, 0.6)';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 15; i++) {
+    let x = (i * 37) % 512;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    for (let y = 0; y < 512; y += 40) {
+      x += (Math.random() - 0.5) * 30;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// 4. Predatory Molten Amber Dragon Eye with Vertical Slit Pupil
+function createDragonEyeTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+
+  // Deep obsidian outer ring
+  ctx.fillStyle = '#110702';
+  ctx.fillRect(0, 0, 256, 256);
+
+  // Molten amber/gold radiating iris
+  const irisGrad = ctx.createRadialGradient(128, 128, 10, 128, 128, 110);
+  irisGrad.addColorStop(0.0, '#fff3b0');
+  irisGrad.addColorStop(0.3, '#ffaa00');
+  irisGrad.addColorStop(0.7, '#d9480f');
+  irisGrad.addColorStop(0.95, '#5c1d02');
+  irisGrad.addColorStop(1.0, '#110702');
+
+  ctx.fillStyle = irisGrad;
+  ctx.beginPath();
+  ctx.arc(128, 128, 110, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Radiating iris striations
+  ctx.strokeStyle = 'rgba(255, 230, 120, 0.35)';
+  ctx.lineWidth = 1.5;
+  for (let a = 0; a < Math.PI * 2; a += 0.08) {
+    ctx.beginPath();
+    ctx.moveTo(128 + Math.cos(a) * 20, 128 + Math.sin(a) * 20);
+    ctx.lineTo(128 + Math.cos(a) * 105, 128 + Math.sin(a) * 105);
+    ctx.stroke();
+  }
+
+  // Vertical slit pupil (draconic predatory eye)
+  ctx.fillStyle = '#050200';
+  ctx.beginPath();
+  ctx.ellipse(128, 128, 14, 82, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Pinpoint specular glint
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.beginPath();
+  ctx.arc(142, 105, 7, 0, Math.PI * 2);
+  ctx.fill();
+
   const tex = new THREE.CanvasTexture(canvas);
   tex.needsUpdate = true;
   return tex;
@@ -88,661 +209,363 @@ function createSparkTexture() {
 // --- INITIALIZATION ---
 function init() {
   const canvas = document.getElementById('dragon-canvas');
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  if (!canvas) {
+    console.error('Canvas #dragon-canvas not found');
+    return;
+  }
+
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance',
+    stencil: false
+  });
   renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.4;
+  renderer.toneMappingExposure = 1.35;
 
   scene = new THREE.Scene();
 
-  // Perspective camera framing the stage nicely
+  // Wide perspective camera calibrated to keep all dragon parts inside the frame
   camera = new THREE.PerspectiveCamera(30, CANVAS_WIDTH / CANVAS_HEIGHT, 0.1, 50);
-  camera.position.set(0.72, 0.72, 5.7);
-  camera.lookAt(0.72, 0.32, 0);
+  camera.position.set(0.55, 0.35, 6.4);
+  camera.lookAt(0.55, -0.05, 0.0);
 
   setupLighting();
   setupEnvironment();
-  setupFireAndParticles();
-  loadModels();
+  loadDragonModel();
 
+  // Deterministic seeking interface for frame capture & visual validation
   window.seekSimulationTime = (t) => {
     isManualTime = true;
-    updateScene(t % LOOP_DURATION, 0.016);
+    updateScene(t % FLIGHT_CYCLE);
     renderer.render(scene, camera);
   };
 
   requestAnimationFrame(renderLoop);
 }
 
-// --- LIGHTING ---
+// --- LIGHTING SYSTEM (CINEMATIC DARK FANTASY) ---
 function setupLighting() {
-  ambientLight = new THREE.AmbientLight(0x111625, 1.8);
+  // 1. Deep Midnight Navy Ambient Base
+  ambientLight = new THREE.AmbientLight(0x0f172a, 1.5);
   scene.add(ambientLight);
 
-  // Cool celestial moonlight from top-left
-  moonLight = new THREE.DirectionalLight(0x38bdf8, 2.4);
-  moonLight.position.set(-2, 5, 3);
-  scene.add(moonLight);
+  // 2. Celestial Cyan-Ice Fill Light (Upper Left Sky)
+  fillLight = new THREE.DirectionalLight(0x38bdf8, 1.9);
+  fillLight.position.set(-3.0, 4.5, 3.0);
+  scene.add(fillLight);
 
-  // Warm key light illuminating dragon and bird anatomy
-  warmKey = new THREE.DirectionalLight(0xffeedd, 2.0);
-  warmKey.position.set(3, 4, 3.5);
-  scene.add(warmKey);
+  // 3. Warm Sunlit Ivory Key Light (Upper Right Front - Sculpting Dragon Facial Anatomy)
+  keyLight = new THREE.DirectionalLight(0xfff1e6, 2.7);
+  keyLight.position.set(2.8, 3.8, 4.2);
+  scene.add(keyLight);
 
-  // Dramatic rim light outlining dragon wings, horns and tail silhouette
-  const rimLight = new THREE.DirectionalLight(0xa855f7, 3.5);
-  rimLight.position.set(5, 3.5, -3.5);
+  // 4. Dramatic Magenta-Purple Silhouette Rim Light (Behind Dragon)
+  rimLight = new THREE.DirectionalLight(0xc084fc, 4.2);
+  rimLight.position.set(4.8, 3.2, -3.2);
   scene.add(rimLight);
 
-  // Dynamic point lights for fire & impact
-  fireLight = new THREE.PointLight(0xff5500, 0, 8);
-  fireLight.position.set(1.8, 0.4, 0.2);
-  scene.add(fireLight);
-
-  impactLight = new THREE.PointLight(0xffaa00, 0, 7);
-  impactLight.position.copy(PERCH_LAND_POS);
-  scene.add(impactLight);
+  // 5. Basalt Ground Reflection Bounce Light (Warm Amber Underbelly Fill)
+  bounceLight = new THREE.DirectionalLight(0xd97706, 1.3);
+  bounceLight.position.set(2.0, -3.0, 1.5);
+  scene.add(bounceLight);
 }
 
-// --- ENVIRONMENT (PERCH & CLIFF) ---
+// --- ENVIRONMENT: CARVED OBSIDIAN BASALT PERCH ---
 function setupEnvironment() {
-  // 1. Dragon Obsidian Perch Cliff at right
-  const cliffGeo = new THREE.CylinderGeometry(1.5, 2.2, 1.9, 8);
-  const cliffMat = new THREE.MeshStandardMaterial({
+  const perchGroup = new THREE.Group();
+  const basaltBump = createBasaltRockTexture();
+
+  // Main Carved Basalt Perch Plinth directly beneath dragon's talons
+  const perchGeo = new THREE.CylinderGeometry(1.25, 1.75, 1.8, 9, 3);
+  const posAttr = perchGeo.attributes.position;
+  for (let i = 0; i < posAttr.count; i++) {
+    const y = posAttr.getY(i);
+    const x = posAttr.getX(i);
+    const z = posAttr.getZ(i);
+    if (y < 0.8 && y > -0.8) {
+      posAttr.setX(i, x + (Math.sin(y * 4 + i) * 0.04));
+      posAttr.setZ(i, z + (Math.cos(y * 4 + i) * 0.04));
+    }
+  }
+  perchGeo.computeVertexNormals();
+
+  const perchMat = new THREE.MeshStandardMaterial({
     color: 0x141a29,
-    roughness: 0.8,
-    metalness: 0.25,
+    bumpMap: basaltBump,
+    bumpScale: 0.06,
+    roughness: 0.82,
+    metalness: 0.20,
     flatShading: true
   });
-  const cliff = new THREE.Mesh(cliffGeo, cliffMat);
-  cliff.position.set(2.65, -1.2, 0);
-  cliff.rotation.y = 0.5;
-  scene.add(cliff);
+  const perchMesh = new THREE.Mesh(perchGeo, perchMat);
+  perchMesh.position.set(1.95, -1.55, 0.0);
+  perchMesh.rotation.y = 0.42;
+  perchGroup.add(perchMesh);
 
-  // 2. Ancient Gnarled Tree Branch / Perch
-  const branchGroup = new THREE.Group();
-  const branchCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-0.35, -0.4, 0.1),
-    new THREE.Vector3(0.0, -0.05, 0.25),
-    new THREE.Vector3(0.2, 0.14, 0.35),
-    new THREE.Vector3(0.35, 0.20, 0.4),
-    new THREE.Vector3(0.55, 0.15, 0.45)
-  ]);
-  const branchGeo = new THREE.TubeGeometry(branchCurve, 32, 0.08, 8, false);
-  const branchMat = new THREE.MeshStandardMaterial({
-    color: 0x2b1d16,
-    roughness: 0.85,
-    metalness: 0.05
+  // Secondary Basalt Shelf Step
+  const stepGeo = new THREE.CylinderGeometry(0.70, 0.95, 0.8, 7);
+  const stepMat = new THREE.MeshStandardMaterial({
+    color: 0x0c101a,
+    bumpMap: basaltBump,
+    bumpScale: 0.05,
+    roughness: 0.88,
+    metalness: 0.15,
+    flatShading: true
   });
-  const branchMesh = new THREE.Mesh(branchGeo, branchMat);
-  branchGroup.add(branchMesh);
+  const stepMesh = new THREE.Mesh(stepGeo, stepMat);
+  stepMesh.position.set(1.30, -1.75, 0.35);
+  stepMesh.rotation.y = 1.1;
+  perchGroup.add(stepMesh);
 
-  // Sub-twig branch fork
-  const subCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0.2, 0.14, 0.35),
-    new THREE.Vector3(0.35, 0.35, 0.25),
-    new THREE.Vector3(0.48, 0.42, 0.18)
-  ]);
-  const subTwig = new THREE.Mesh(new THREE.TubeGeometry(subCurve, 16, 0.04, 6, false), branchMat);
-  branchGroup.add(subTwig);
-
-  // Moss cushion where bird perches
-  const mossGeo = new THREE.SphereGeometry(0.09, 8, 6);
-  mossGeo.scale(1.3, 0.4, 1.1);
-  const mossMat = new THREE.MeshStandardMaterial({ color: 0x2d4420, roughness: 0.9 });
-  const moss = new THREE.Mesh(mossGeo, mossMat);
-  moss.position.copy(PERCH_LAND_POS);
-  moss.position.y -= 0.03;
-  branchGroup.add(moss);
-
-  // Scorched hot-spot mesh on branch (glows white-hot then cools to charred amber)
-  const scorchGeo = new THREE.SphereGeometry(0.12, 10, 10);
-  scorchGeo.scale(1.4, 0.6, 1.2);
-  const scorchMat = new THREE.MeshBasicMaterial({
-    color: 0xffaa00,
-    transparent: true,
-    opacity: 0.0,
-    blending: THREE.AdditiveBlending
-  });
-  branchScorchMesh = new THREE.Mesh(scorchGeo, scorchMat);
-  branchScorchMesh.position.copy(PERCH_LAND_POS);
-  branchGroup.add(branchScorchMesh);
-
-  scene.add(branchGroup);
+  scene.add(perchGroup);
 }
 
-// --- VOLUMETRIC FIRE & SPRITE SYSTEMS ---
-function setupFireAndParticles() {
-  const flameTex = createFlameTexture();
-  const smokeTex = createSmokeTexture();
-  const sparkTex = createSparkTexture();
-
-  // 1. Throat Glow Sprite inside dragon's maw (State D anticipation)
-  const mouthMat = new THREE.SpriteMaterial({
-    map: flameTex,
-    color: 0xffcc33,
-    transparent: true,
-    opacity: 0.0,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-  mouthGlowSprite = new THREE.Sprite(mouthMat);
-  mouthGlowSprite.scale.set(0.4, 0.4, 1.0);
-  scene.add(mouthGlowSprite);
-
-  // 2. High-Density Additive Fire Stream (48 billboard flame sprites)
-  fireSpriteGroup = new THREE.Group();
-  fireSpriteGroup.visible = false;
-
-  for (let i = 0; i < 48; i++) {
-    const mat = new THREE.SpriteMaterial({
-      map: flameTex,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const sp = new THREE.Sprite(mat);
-    sp.userData = {
-      index: i,
-      offset: (Math.random() - 0.5) * 0.1,
-      speed: 0.8 + Math.random() * 0.4
-    };
-    fireSprites.push(sp);
-    fireSpriteGroup.add(sp);
-  }
-  scene.add(fireSpriteGroup);
-
-  // 3. Branch Impact Flame Burst (10 impact sprites)
-  for (let i = 0; i < 10; i++) {
-    const mat = new THREE.SpriteMaterial({
-      map: flameTex,
-      transparent: true,
-      opacity: 0.0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const sp = new THREE.Sprite(mat);
-    sp.position.copy(PERCH_LAND_POS);
-    impactFireSprites.push(sp);
-    scene.add(sp);
-  }
-
-  // 4. Branch Impact Sparks (35 ricocheting ember sprites)
-  sparkSpriteGroup = new THREE.Group();
-  for (let i = 0; i < 35; i++) {
-    const mat = new THREE.SpriteMaterial({
-      map: sparkTex,
-      color: 0xffd23f,
-      transparent: true,
-      opacity: 0.0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    const sp = new THREE.Sprite(mat);
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 0.8 + Math.random() * 1.5;
-    sp.userData = {
-      vx: Math.cos(angle) * speed * 0.5 - 0.25, // Spray upward & left
-      vy: 0.6 + Math.random() * 1.4,
-      vz: Math.sin(angle) * speed * 0.5,
-      life: Math.random(),
-      rate: 1.2 + Math.random() * 1.4
-    };
-    sp.scale.set(0.12, 0.12, 1.0);
-    sparkSprites.push(sp);
-    sparkSpriteGroup.add(sp);
-  }
-  scene.add(sparkSpriteGroup);
-
-  // 5. Rising Smoke Billows (20 soft smoke sprites)
-  smokeSpriteGroup = new THREE.Group();
-  for (let i = 0; i < 20; i++) {
-    const mat = new THREE.SpriteMaterial({
-      map: smokeTex,
-      transparent: true,
-      opacity: 0.0,
-      depthWrite: false
-    });
-    const sp = new THREE.Sprite(mat);
-    sp.userData = {
-      xOffset: (Math.random() - 0.5) * 0.35,
-      yVel: 0.35 + Math.random() * 0.45,
-      xVel: (Math.random() - 0.5) * 0.2,
-      life: Math.random(),
-      rate: 0.4 + Math.random() * 0.3
-    };
-    sp.scale.set(0.65, 0.65, 1.0);
-    smokeSprites.push(sp);
-    smokeSpriteGroup.add(sp);
-  }
-  scene.add(smokeSpriteGroup);
-}
-
-// --- MODEL LOADING ---
-function loadModels() {
+// --- DRAGON MODEL & PBR MATERIAL SETUP ---
+function loadDragonModel() {
   const loader = new GLTFLoader();
   const loadingEl = document.getElementById('loading-indicator');
 
-  let loadedCount = 0;
-  const checkDone = () => {
-    loadedCount++;
-    if (loadedCount >= 2) {
-      isAssetsLoaded = true;
-      if (loadingEl) loadingEl.style.display = 'none';
-      console.log('✓ All 3D character models loaded successfully!');
-    }
-  };
+  const scalesBump = createDragonScalesTexture();
+  const wingBump = createWingMembraneTexture();
+  const eyeTexture = createDragonEyeTexture();
 
-  // 1. Dragon (Quaternius Rigged Low-Poly Dragon)
   loader.load('../assets/models/Dragon.glb', (gltf) => {
     dragonModel = gltf.scene;
-    dragonModel.scale.set(0.65, 0.65, 0.65);
-    dragonModel.position.copy(DRAGON_POS);
-    dragonModel.rotation.y = -1.25;
+    dragonModel.scale.setScalar(DRAGON_SCALE);
+    dragonModel.position.copy(DRAGON_BASE_POS);
+    dragonModel.rotation.set(DRAGON_BASE_ROTX, DRAGON_BASE_ROTY, 0);
 
-    // Apply distinct PBR materials based on model's named material slots
+    // Apply Premium PBR multi-material system with procedural relief textures
     dragonModel.traverse((node) => {
       if (node.isMesh) {
         node.castShadow = true;
+        node.receiveShadow = true;
         const materials = Array.isArray(node.material) ? node.material : [node.material];
         materials.forEach((mat) => {
           if (!mat) return;
-          mat.roughness = 0.6;
-          mat.metalness = 0.25;
-          const matName = mat.name ? mat.name.toLowerCase() : '';
+          const matName = (mat.name || '').toLowerCase();
 
           if (matName === 'main') {
-            // Rich Crimson-Obsidian scales
-            mat.color.setHex(0x881c1c);
+            // Rich Crimson-Obsidian Dragon Scales with relief displacement
+            mat.color.setHex(0x821c1c);
+            mat.bumpMap = scalesBump;
+            mat.bumpScale = 0.035;
+            mat.roughness = 0.58;
+            mat.metalness = 0.28;
           } else if (matName === 'wings') {
-            // Leathery crimson-purple wing membranes
-            mat.color.setHex(0x5a1836);
+            // Leathery plum-burgundy wing membrane with fibrous bump
+            mat.color.setHex(0x54122f);
+            mat.bumpMap = wingBump;
+            mat.bumpScale = 0.025;
+            mat.roughness = 0.68;
+            mat.metalness = 0.15;
+            mat.side = THREE.DoubleSide;
           } else if (matName === 'belly') {
-            // Warm amber-gold underbelly armor plates
+            // Warm burnished amber-gold gastrostegite armor plates
             mat.color.setHex(0xd97706);
+            mat.bumpMap = scalesBump;
+            mat.bumpScale = 0.028;
+            mat.roughness = 0.38;
+            mat.metalness = 0.44;
           } else if (matName === 'claws') {
-            // Gleaming golden horns, dorsal spikes, and sharp talons
+            // Ancient polished golden horns, cranial ridges & claws
             mat.color.setHex(0xf59e0b);
-            mat.roughness = 0.25;
-            mat.metalness = 0.75;
+            mat.roughness = 0.18;
+            mat.metalness = 0.85;
           } else if (matName === 'eyes') {
-            // Incandescent dragon eye glow
-            mat.color.setHex(0xffdd00);
-            mat.emissive.setHex(0xffaa00);
-            mat.emissiveIntensity = 2.5;
+            // Molten amber dragon eye with slit pupil
+            mat.map = eyeTexture;
+            mat.emissive.setHex(0xff9900);
+            mat.emissiveIntensity = 1.8;
+            mat.roughness = 0.15;
+            mat.metalness = 0.1;
           }
         });
       }
+
+      // Catalog all skeletal bones (using exact bone names from Dragon.glb)
       if (node.isBone) {
-        if (node.name === 'Head') dragonHeadBone = node;
-        if (node.name === 'Neck') dragonNeckBone = node;
-        if (node.name === 'Nose_end' || node.name === 'Nose') dragonSnoutBone = node;
+        dragonBones[node.name] = node;
+        node.userData.baseRotation = node.rotation.clone();
+        node.userData.basePosition = node.position.clone();
       }
     });
-
-    dragonMixer = new THREE.AnimationMixer(dragonModel);
-    gltf.animations.forEach((clip) => {
-      dragonClips[clip.name] = dragonMixer.clipAction(clip);
-    });
-
-    if (dragonClips['Idle']) {
-      dragonClips['Idle'].play();
-    }
 
     scene.add(dragonModel);
-    checkDone();
-  }, undefined, (err) => console.error('Error loading Dragon.glb:', err));
-
-  // 2. Bird (Three.js Core Morph-Animated Flight Bird)
-  loader.load('../assets/models/Parrot.glb', (gltf) => {
-    birdModel = gltf.scene;
-    birdModel.scale.set(0.024, 0.024, 0.024);
-    birdModel.position.copy(BIRD_START_POS);
-
-    birdMixer = new THREE.AnimationMixer(birdModel);
-    if (gltf.animations && gltf.animations.length > 0) {
-      birdClipAction = birdMixer.clipAction(gltf.animations[0]);
-      birdClipAction.play();
-    }
-
-    // Preserve vivid vertex colors on parrot feathers
-    birdModel.traverse((node) => {
-      if (node.isMesh && node.material) {
-        node.material.vertexColors = true;
-        node.material.roughness = 0.5;
-        node.material.metalness = 0.1;
-      }
-    });
-
-    scene.add(birdModel);
-    checkDone();
-  }, undefined, (err) => console.error('Error loading Parrot.glb:', err));
+    window.dragonModel = dragonModel;
+    window.dragonBones = dragonBones;
+    isAssetsLoaded = true;
+    if (loadingEl) loadingEl.style.display = 'none';
+    console.log('✓ Premium 3D Dragon loaded with PBR relief textures & flight rig!');
+  }, undefined, (err) => {
+    console.error('Error loading Dragon.glb:', err);
+    if (loadingEl) loadingEl.textContent = '3D Canvas Ready';
+  });
 }
 
-// --- STATE MACHINE & CINEMATIC CHOREOGRAPHY ---
-function updateScene(t, dt) {
-  if (!isAssetsLoaded) return;
+// --- HARMONIC FLIGHT KINEMATICS ENGINE ---
+function updateScene(t) {
+  if (!isAssetsLoaded || !dragonModel) return;
 
-  const stateText = document.getElementById('current-state-text');
+  const omega = (Math.PI * 2) / FLIGHT_CYCLE;
+  const tau = (t % FLIGHT_CYCLE) * omega;
 
-  // --- 7 DETERMINISTIC STATE INTERVALS (Total 8.0s) ---
-  let state = 'A';
-  if (t < 1.8) state = 'A';       // 0.0 - 1.8s: Dragon Idle
-  else if (t < 3.2) state = 'B';  // 1.8 - 3.2s: Bird Arrival & Landing
-  else if (t < 4.2) state = 'C';  // 3.2 - 4.2s: Dragon Threat Gaze
-  else if (t < 5.0) state = 'D';  // 4.2 - 5.0s: Fire Preparation & Maw Glow
-  else if (t < 5.6) state = 'E';  // 5.0 - 5.6s: Bird Emergency Takeoff & Escape
-  else if (t < 6.8) state = 'F';  // 5.6 - 6.8s: Fire Torrent & Branch Blast
-  else state = 'G';               // 6.8 - 8.0s: Ember Cool-down & Seamless Reset
+  // Snappy power downstroke, buoyant recovery upstroke
+  const flapWave = Math.sin(tau) + 0.16 * Math.sin(2 * tau);
+  const flapCos = Math.cos(tau);
 
-  if (stateText) {
-    const labels = {
-      'A': 'STATE A: DRAGON IDLE & PERCHED',
-      'B': 'STATE B: BIRD ARRIVAL & LANDING ON BRANCH',
-      'C': 'STATE C: DRAGON THREAT DETECTION & GAZE TRACK',
-      'D': 'STATE D: FIRE-BREATH ANTICIPATION & JAW OPEN',
-      'E': 'STATE E: BIRD EMERGENCY TAKEOFF ESCAPE',
-      'F': 'STATE F: ROARING FIRE TORRENT & BRANCH IMPACT',
-      'G': 'STATE G: EMBER COOL-DOWN & LOOP RESET'
-    };
-    stateText.textContent = labels[state] || state;
+  // 1. DRAGON TORSO HOVER COUNTER-BOB
+  // Lift occurs as wings press downward (phase + π)
+  const hoverLift = Math.sin(tau + Math.PI) * 0.048;
+  const hoverDriftX = Math.sin(tau * 0.5) * 0.010;
+  dragonModel.position.x = DRAGON_BASE_POS.x + hoverDriftX;
+  dragonModel.position.y = DRAGON_BASE_POS.y + hoverLift;
+  dragonModel.position.z = DRAGON_BASE_POS.z;
+
+  // Aerodynamic body pitch tilting
+  const pitchOffset = flapCos * 0.042;
+  const yawAngle = DRAGON_BASE_ROTY + Math.sin(tau * 0.5) * 0.020;
+  const rollAngle = Math.sin(tau) * 0.012;
+  dragonModel.rotation.set(DRAGON_BASE_ROTX + pitchOffset, yawAngle, rollAngle);
+
+  const b = dragonBones;
+
+  // 2. WING ARTICULATION (4-SEGMENT HIERARCHICAL KINEMATICS)
+  // Left & Right Wings
+  // Flapping primary stroke along X-axis (+X moves up, -X moves down),
+  // with Z-axis controlling sweep and Y-axis controlling twist
+  
+  // Shoulder Joint
+  if (b['ShoulderL']) {
+    b['ShoulderL'].rotation.copy(b['ShoulderL'].userData.baseRotation);
+    b['ShoulderL'].rotation.x += flapWave * 0.12;
+    b['ShoulderL'].rotation.z -= flapCos * 0.06;
+  }
+  if (b['ShoulderR']) {
+    b['ShoulderR'].rotation.copy(b['ShoulderR'].userData.baseRotation);
+    b['ShoulderR'].rotation.x += flapWave * 0.12;
+    b['ShoulderR'].rotation.z += flapCos * 0.06;
   }
 
-  // --- 1. BIRD KINEMATICS & FLIGHT PATH ---
-  if (birdModel) {
-    if (state === 'A') {
-      // Hidden off-screen in high sky
-      birdModel.position.set(-4.0, 4.0, -1.0);
-      if (birdClipAction) birdClipAction.timeScale = 0;
-    } else if (state === 'B') {
-      // Smooth swooping descent onto the branch perch
-      const u = (t - 1.8) / (3.2 - 1.8);
-      const ease = 1 - Math.pow(1 - u, 3); // Decelerating landing flare
-
-      // 3-point Catmull curve for natural aerodynamic banking
-      const midPoint = new THREE.Vector3(-0.1, 1.2, 0.1);
-      const p1 = new THREE.Vector3().lerpVectors(BIRD_START_POS, midPoint, ease);
-      const p2 = new THREE.Vector3().lerpVectors(midPoint, PERCH_LAND_POS, ease);
-      birdModel.position.lerpVectors(p1, p2, ease);
-
-      birdModel.rotation.y = THREE.MathUtils.lerp(1.3, 0.45, ease);
-      birdModel.rotation.z = Math.sin(u * Math.PI) * -0.35; // Bank wings into turn
-      birdModel.rotation.x = THREE.MathUtils.lerp(0.3, 0.0, ease);
-
-      if (birdClipAction) {
-        birdClipAction.timeScale = THREE.MathUtils.lerp(2.4, 0.6, ease);
-      }
-    } else if (state === 'C' || state === 'D') {
-      // Securely perched on branch moss
-      birdModel.position.copy(PERCH_LAND_POS);
-      birdModel.rotation.set(0.04, 0.45, 0);
-
-      // Subtle resting body bob & alert head movements
-      birdModel.position.y += Math.sin((t - 3.2) * 5) * 0.008;
-      if (state === 'D') {
-        // Tenses up as dragon mouth starts glowing
-        birdModel.rotation.y = 0.45 + Math.sin((t - 4.2) * 12) * 0.08;
-      }
-
-      if (birdClipAction) birdClipAction.timeScale = 0; // Wings folded
-    } else if (state === 'E') {
-      // EXPLOSIVE PANIC TAKEOFF! Bird leaps into air before fire strikes
-      const u = (t - 5.0) / (5.6 - 5.0);
-      const ease = u * (2 - u); // Rapid initial leap
-
-      birdModel.position.lerpVectors(PERCH_LAND_POS, BIRD_ESCAPE_APEX, ease);
-      birdModel.rotation.y = THREE.MathUtils.lerp(0.45, -0.6, ease);
-      birdModel.rotation.x = THREE.MathUtils.lerp(0, -0.35, ease); // Climbing pitch
-      birdModel.rotation.z = THREE.MathUtils.lerp(0, 0.35, ease);
-
-      if (birdClipAction) birdClipAction.timeScale = 3.8; // Furious wing flapping!
-    } else if (state === 'F') {
-      // Soaring safely across upper sky (fully within frame)
-      const u = (t - 5.6) / (6.8 - 5.6);
-      birdModel.position.lerpVectors(BIRD_ESCAPE_APEX, BIRD_ESCAPE_END, u);
-      birdModel.rotation.set(-0.1, -0.65, 0.15);
-      if (birdClipAction) birdClipAction.timeScale = 1.8;
-    } else if (state === 'G') {
-      // Accelerating into upper sky to exit frame for seamless loop reset
-      const u = (t - 6.8) / (LOOP_DURATION - 6.8);
-      const offscreenTarget = new THREE.Vector3(3.8, 3.2, -0.4);
-      birdModel.position.lerpVectors(BIRD_ESCAPE_END, offscreenTarget, u);
-      birdModel.rotation.set(-0.1, -0.65, 0.15);
-      if (birdClipAction) birdClipAction.timeScale = 1.4;
-    }
+  // Inner Wing Bone (Humerus) - Main Power Flap
+  if (b['Wing1L']) {
+    b['Wing1L'].rotation.copy(b['Wing1L'].userData.baseRotation);
+    b['Wing1L'].rotation.x += flapWave * 0.50; // Up/down flap
+    b['Wing1L'].rotation.z -= flapWave * 0.22; // Forward/backward sweep
+    b['Wing1L'].rotation.y += flapCos * 0.15;  // Aerodynamic feathering
+  }
+  if (b['Wing1R']) {
+    b['Wing1R'].rotation.copy(b['Wing1R'].userData.baseRotation);
+    b['Wing1R'].rotation.x += flapWave * 0.50;
+    b['Wing1R'].rotation.z += flapWave * 0.22;
+    b['Wing1R'].rotation.y -= flapCos * 0.15;
   }
 
-  // --- 2. DRAGON ANIMATIONS & PROCEDURAL HEAD TRACKING ---
-  const mouthPos = new THREE.Vector3(1.78, 0.35, 0.22); // Calculated mouth position
-
-  if (dragonModel) {
-    dragonModel.position.copy(DRAGON_POS);
-    dragonModel.rotation.y = -1.25;
-
-    // Live world position of snout bone for exact flame origin
-    if (dragonSnoutBone) {
-      dragonSnoutBone.getWorldPosition(mouthPos);
-    } else if (dragonHeadBone) {
-      dragonHeadBone.getWorldPosition(mouthPos);
-      mouthPos.x -= 0.28;
-      mouthPos.y -= 0.04;
-    }
-
-    if (state === 'C') {
-      // Threat reaction: Turn head & gaze directly at perched bird
-      const progress = (t - 3.2) / 1.0;
-      if (dragonHeadBone) {
-        dragonHeadBone.rotation.y = THREE.MathUtils.lerp(0, -0.35, progress);
-        dragonHeadBone.rotation.x = THREE.MathUtils.lerp(0, -0.15, progress); // Gaze downward at branch
-      }
-    } else if (state === 'D') {
-      // Fire Prep: Rearing back, swelling chest, jaw opening wide
-      const progress = (t - 4.2) / 0.8;
-      dragonModel.position.y += Math.sin(progress * Math.PI) * 0.06;
-      if (dragonHeadBone) {
-        dragonHeadBone.rotation.x = THREE.MathUtils.lerp(-0.15, 0.2, progress); // Head pulls back in anticipation
-        dragonHeadBone.rotation.y = -0.35;
-      }
-    } else if (state === 'F') {
-      // Sustained fire thrust forward aiming directly down at branch
-      dragonModel.position.x = DRAGON_POS.x - 0.05;
-      if (dragonHeadBone) {
-        dragonHeadBone.rotation.x = -0.25; // Lean head forward & DOWN toward perch
-        dragonHeadBone.rotation.y = -0.32;
-      }
-    } else {
-      if (dragonHeadBone) dragonHeadBone.rotation.set(0, 0, 0);
-    }
-
-    // Play attack motion clip during anticipation & fire
-    const attackClip = dragonClips['DragonArmature|DragonArmature|Dragon_Attack2'] || dragonClips['2H_Melee_Attack_Chop'];
-    if (attackClip) {
-      if (state === 'D' || state === 'F') {
-        attackClip.play();
-        attackClip.setEffectiveWeight(1.0);
-      } else {
-        attackClip.setEffectiveWeight(0.0);
-      }
-    }
+  // Mid Wing Bone (Elbow / Radius) - Phase Lag ~25° (0.42 rad)
+  const lag2 = 0.42;
+  const flapWave2 = Math.sin(tau - lag2) + 0.16 * Math.sin(2 * (tau - lag2));
+  const flapCos2 = Math.cos(tau - lag2);
+  if (b['Wing2L']) {
+    b['Wing2L'].rotation.copy(b['Wing2L'].userData.baseRotation);
+    b['Wing2L'].rotation.x += flapWave2 * 0.40;
+    b['Wing2L'].rotation.z -= flapWave2 * 0.16;
+    b['Wing2L'].rotation.y += flapCos2 * 0.12;
+  }
+  if (b['Wing2R']) {
+    b['Wing2R'].rotation.copy(b['Wing2R'].userData.baseRotation);
+    b['Wing2R'].rotation.x += flapWave2 * 0.40;
+    b['Wing2R'].rotation.z += flapWave2 * 0.16;
+    b['Wing2R'].rotation.y -= flapCos2 * 0.12;
   }
 
-  // Position throat glow sprite & light
-  mouthGlowSprite.position.copy(mouthPos);
-  fireLight.position.copy(mouthPos);
-
-  // --- 3. DIRECTIONAL FIRE BLAST, PARTICLES & IMPACT ---
-  if (state === 'D') {
-    // State D: Maw glow & anticipation sparks
-    const u = (t - 4.2) / 0.8;
-    mouthGlowSprite.material.opacity = u * 0.9;
-    mouthGlowSprite.scale.setScalar(0.3 + u * 0.4);
-    fireLight.intensity = u * 5.0;
-    fireLight.color.setHex(0xffaa00);
-
-    impactLight.intensity = 0;
-    branchScorchMesh.material.opacity = 0;
-    fireSpriteGroup.visible = false;
-    sparkSpriteGroup.visible = false;
-    smokeSpriteGroup.visible = false;
-  } else if (state === 'F') {
-    // State F: ROARING DIRECTIONAL FIRE TORRENT!
-    mouthGlowSprite.material.opacity = 1.0;
-    mouthGlowSprite.scale.setScalar(0.7);
-    fireLight.intensity = 13.0;
-    fireLight.color.setHex(0xfff5ea);
-
-    fireSpriteGroup.visible = true;
-
-    const streamVec = new THREE.Vector3().subVectors(PERCH_LAND_POS, mouthPos);
-    const count = fireSprites.length;
-
-    // Animate 48 volumetric flame sprites along stream
-    for (let i = 0; i < count; i++) {
-      const sp = fireSprites[i];
-      const u = i / (count - 1); // 0 (mouth) to 1 (perch)
-
-      // Dynamic turbulent waves
-      const turb = Math.sin(t * 22 + u * 10 + sp.userData.offset * 15);
-      const turbZ = Math.cos(t * 18 + u * 8);
-      const spread = Math.sin(u * Math.PI) * (0.04 + u * 0.28);
-
-      sp.position.x = mouthPos.x + streamVec.x * u + turb * spread * 0.4;
-      sp.position.y = mouthPos.y + streamVec.y * u + turb * spread * 0.8;
-      sp.position.z = mouthPos.z + streamVec.z * u + turbZ * spread * 0.4;
-
-      // Scale expands as fire billows downstream
-      const scale = THREE.MathUtils.lerp(0.22, 0.65, u) * (0.9 + Math.sin(t * 26 + i) * 0.15);
-      sp.scale.set(scale, scale, 1.0);
-
-      // Color ramp: Intense white-hot at mouth -> golden yellow -> roaring flame red
-      if (u < 0.25) {
-        sp.material.color.setHex(0xffffff);
-        sp.material.opacity = 0.95;
-      } else if (u < 0.65) {
-        sp.material.color.setHex(0xffb703);
-        sp.material.opacity = 0.9;
-      } else {
-        sp.material.color.setHex(0xfb8500);
-        sp.material.opacity = 0.85;
-      }
-    }
-
-    // Branch Impact (t >= 5.75s, after bird has safely climbed into the sky!)
-    if (t >= 5.75) {
-      impactLight.intensity = 10.0;
-      impactLight.color.setHex(0xffb703);
-
-      branchScorchMesh.material.opacity = 0.9;
-
-      // Impact flame billows
-      impactFireSprites.forEach((sp, i) => {
-        const rad = 0.08 + (i * 0.02);
-        const ang = (i / 10) * Math.PI * 2 + t * 8;
-        sp.position.x = PERCH_LAND_POS.x + Math.cos(ang) * rad;
-        sp.position.y = PERCH_LAND_POS.y + Math.sin(ang) * rad * 0.5 + 0.05;
-        sp.position.z = PERCH_LAND_POS.z + Math.sin(ang) * rad;
-        const s = 0.4 + Math.sin(t * 20 + i) * 0.15;
-        sp.scale.set(s, s, 1.0);
-        sp.material.opacity = 0.85;
-      });
-
-      // Violent ricocheting sparks off branch
-      sparkSpriteGroup.visible = true;
-      sparkSprites.forEach((sp) => {
-        const ud = sp.userData;
-        ud.life = (ud.life + dt * ud.rate) % 1.0;
-        const sTime = ud.life * 0.65;
-
-        sp.position.x = PERCH_LAND_POS.x + ud.vx * sTime;
-        sp.position.y = PERCH_LAND_POS.y + ud.vy * sTime - (9.8 * sTime * sTime * 0.25); // Parabolic gravity arc
-        sp.position.z = PERCH_LAND_POS.z + ud.vz * sTime;
-        sp.material.opacity = (1.0 - ud.life) * 0.95;
-      });
-
-      // Billowing smoke from charred perch
-      smokeSpriteGroup.visible = true;
-      smokeSprites.forEach((sp) => {
-        const ud = sp.userData;
-        ud.life = (ud.life + dt * ud.rate) % 1.0;
-        sp.position.x = PERCH_LAND_POS.x + ud.xOffset + ud.xVel * ud.life;
-        sp.position.y = PERCH_LAND_POS.y + ud.yVel * ud.life;
-        sp.position.z = PERCH_LAND_POS.z;
-        const s = 0.4 + ud.life * 0.55;
-        sp.scale.set(s, s, 1.0);
-        sp.material.opacity = (1.0 - ud.life) * 0.5;
-      });
-    } else {
-      impactLight.intensity = 0;
-      impactFireSprites.forEach(sp => sp.material.opacity = 0);
-      sparkSpriteGroup.visible = false;
-      smokeSpriteGroup.visible = false;
-    }
-  } else if (state === 'G') {
-    // State G: Ember Cool-down, Smoke Dissipation, and Seamless Reset
-    const u = 1 - ((t - 6.8) / 1.2);
-    mouthGlowSprite.material.opacity = Math.max(0, u * 0.3);
-    fireLight.intensity = Math.max(0, u * 2.5);
-    impactLight.intensity = Math.max(0, u * 3.0);
-
-    branchScorchMesh.material.opacity = Math.max(0, u * 0.6);
-    fireSpriteGroup.visible = false;
-    impactFireSprites.forEach(sp => sp.material.opacity = 0);
-
-    // Fading residual sparks falling into ash
-    if (u > 0.3) {
-      sparkSpriteGroup.visible = true;
-      sparkSprites.forEach((sp) => {
-        const ud = sp.userData;
-        ud.life = (ud.life + dt * ud.rate) % 1.0;
-        const sTime = ud.life * 0.65;
-        sp.position.x = PERCH_LAND_POS.x + ud.vx * sTime;
-        sp.position.y = PERCH_LAND_POS.y + ud.vy * sTime - (9.8 * sTime * sTime * 0.25);
-        sp.position.z = PERCH_LAND_POS.z + ud.vz * sTime;
-        sp.material.opacity = (1.0 - ud.life) * u * 0.8;
-      });
-    } else {
-      sparkSpriteGroup.visible = false;
-    }
-
-    // Dissipating smoke
-    smokeSpriteGroup.visible = true;
-    smokeSprites.forEach((sp) => {
-      const ud = sp.userData;
-      ud.life = (ud.life + dt * ud.rate) % 1.0;
-      sp.position.x = PERCH_LAND_POS.x + ud.xOffset + ud.xVel * ud.life;
-      sp.position.y = PERCH_LAND_POS.y + ud.yVel * ud.life;
-      sp.position.z = PERCH_LAND_POS.z;
-      const s = 0.4 + ud.life * 0.55;
-      sp.scale.set(s, s, 1.0);
-      sp.material.opacity = (1.0 - ud.life) * u * 0.4;
-    });
-  } else {
-    // State A & B
-    mouthGlowSprite.material.opacity = 0;
-    fireLight.intensity = 0;
-    impactLight.intensity = 0;
-    branchScorchMesh.material.opacity = 0;
-    fireSpriteGroup.visible = false;
-    impactFireSprites.forEach(sp => sp.material.opacity = 0);
-    sparkSpriteGroup.visible = false;
-    smokeSpriteGroup.visible = false;
+  // Outer Wing Bone (Metacarpal strut) - Phase Lag ~50° (0.85 rad)
+  const lag3 = 0.85;
+  const flapWave3 = Math.sin(tau - lag3) + 0.16 * Math.sin(2 * (tau - lag3));
+  if (b['Wing3L']) {
+    b['Wing3L'].rotation.copy(b['Wing3L'].userData.baseRotation);
+    b['Wing3L'].rotation.x += flapWave3 * 0.32;
+    b['Wing3L'].rotation.z -= flapWave3 * 0.12;
+  }
+  if (b['Wing3R']) {
+    b['Wing3R'].rotation.copy(b['Wing3R'].userData.baseRotation);
+    b['Wing3R'].rotation.x += flapWave3 * 0.32;
+    b['Wing3R'].rotation.z += flapWave3 * 0.12;
   }
 
-  // Update animation mixers
-  if (dragonMixer) dragonMixer.update(dt);
-  if (birdMixer) birdMixer.update(dt);
+  // Wing Tip Digit (Trailing Membrane Elastic Flex) - Phase Lag ~75° (1.30 rad)
+  const lag4 = 1.30;
+  const flapWave4 = Math.sin(tau - lag4) + 0.16 * Math.sin(2 * (tau - lag4));
+  if (b['Wing4L']) {
+    b['Wing4L'].rotation.copy(b['Wing4L'].userData.baseRotation);
+    b['Wing4L'].rotation.x += flapWave4 * 0.26;
+    b['Wing4L'].rotation.z -= flapWave4 * 0.10;
+  }
+  if (b['Wing4R']) {
+    b['Wing4R'].rotation.copy(b['Wing4R'].userData.baseRotation);
+    b['Wing4R'].rotation.x += flapWave4 * 0.26;
+    b['Wing4R'].rotation.z += flapWave4 * 0.10;
+  }
+
+  // 3. HEAD & NECK GAZE STABILIZATION
+  // Keeps the skull locked forward toward viewer despite torso pitch
+  if (b['Neck']) {
+    b['Neck'].rotation.copy(b['Neck'].userData.baseRotation);
+    b['Neck'].rotation.x -= pitchOffset * 0.55;
+    b['Neck'].rotation.y += Math.sin(tau * 0.5) * 0.03;
+  }
+  if (b['Head']) {
+    b['Head'].rotation.copy(b['Head'].userData.baseRotation);
+    b['Head'].rotation.x -= pitchOffset * 0.70;
+    b['Head'].rotation.y += Math.sin(tau * 0.5) * 0.04;
+  }
+  if (b['Face']) {
+    b['Face'].rotation.copy(b['Face'].userData.baseRotation);
+    b['Face'].rotation.x += Math.sin(tau) * 0.015;
+  }
+
+  // 4. TAIL HARMONIC TRAVELING WAVE
+  const tailLag = 0.52;
+  const tailBones = ['Tail1', 'Tail2', 'Tail3', 'Tail4'];
+  tailBones.forEach((name, idx) => {
+    if (b[name]) {
+      b[name].rotation.copy(b[name].userData.baseRotation);
+      const tPhase = tau - (idx * tailLag);
+      b[name].rotation.y += Math.sin(tPhase) * (0.12 + idx * 0.04);
+      b[name].rotation.z += Math.cos(tPhase) * (0.05 + idx * 0.02);
+    }
+  });
+
+  // 5. HOVERING TALONS SUSPENSION
+  if (b['UpperLegL']) {
+    b['UpperLegL'].rotation.copy(b['UpperLegL'].userData.baseRotation);
+    b['UpperLegL'].rotation.x += 0.10 + flapCos * 0.03;
+  }
+  if (b['UpperLegR']) {
+    b['UpperLegR'].rotation.copy(b['UpperLegR'].userData.baseRotation);
+    b['UpperLegR'].rotation.x += 0.10 + flapCos * 0.03;
+  }
+  if (b['FeetL']) {
+    b['FeetL'].rotation.copy(b['FeetL'].userData.baseRotation);
+    b['FeetL'].rotation.x += 0.06 + flapWave * 0.02;
+  }
+  if (b['FeetR']) {
+    b['FeetR'].rotation.copy(b['FeetR'].userData.baseRotation);
+    b['FeetR'].rotation.x += 0.06 + flapWave * 0.02;
+  }
 }
 
-// --- RENDER LOOP ---
+// --- CONTINUOUS RENDER LOOP ---
 let lastTime = performance.now();
 function renderLoop(now) {
   if (!isManualTime) {
     const dt = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
-    globalTime = (globalTime + dt) % LOOP_DURATION;
-    updateScene(globalTime, dt);
+    globalTime = (globalTime + dt) % FLIGHT_CYCLE;
+    updateScene(globalTime);
     renderer.render(scene, camera);
   }
   requestAnimationFrame(renderLoop);
