@@ -2,16 +2,16 @@ import * as THREE from 'three';
 window.THREE = THREE;
 
 // --- CONFIGURATION & CALIBRATED PARAMETERS ---
-// Calibrated speed: 11.4 seconds per complete cycle (~35% of original 4.0s speed)
-const LOOP_DURATION = 11.4;
+// Calibrated speed: 16.2 seconds per complete cycle (slowed down by ~30% from 11.4s)
+const LOOP_DURATION = 16.2;
 const CANVAS_WIDTH = 880;
 const CANVAS_HEIGHT = 280;
 
-// Infinity placement: centered in the right 58% of the banner (utilizing right side with balanced margin)
-// Leaves left 42% clear for developer title & typography (ends at X <= 0.0)
-const INFINITY_CENTER = new THREE.Vector3(2.20, 0.0, 0.0);
-const SCALE_A = 1.95; // Loop half-width (Total width = 3.90 units, reaches X = 4.15)
-const SCALE_B = 2.65; // Calibrated for full, open, round loops (Loop height = 1.77 units, aspect = 2.20 : 1)
+// Infinity placement & dimensions: harmoniously adjusted to the canvas area
+// With subtitle tags removed, the composition is rebalanced with generous breathing margins
+const INFINITY_CENTER = new THREE.Vector3(2.15, 0.0, 0.0);
+const SCALE_A = 2.00; // Loop half-width (Total width = 4.00 units, spans X: [0.15, 4.15])
+const SCALE_B = 2.70; // Calibrated round loop curvature (Loop height = 2.08 units, aspect = 2.20 : 1)
 const DEPTH_C = 0.36; // 3D z-depth separation at central crossing for clear over-under path
 
 let scene, camera, renderer;
@@ -21,6 +21,7 @@ let codeSpriteList = [];
 let sparkPoints, sparkGeo;
 let ambientMotes, motesGeo;
 let centerGlowSprite;
+let foggyCodeSprites = [];
 let isLoaded = false;
 let globalTime = 0.0;
 let isManualTime = false;
@@ -235,6 +236,34 @@ function createRadialGlowTexture() {
   return tex;
 }
 
+function createFoggyTextTexture(text, color = '#38bdf8') {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 48;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  // Foggy atmospheric blur pass
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = color;
+  ctx.font = 'bold 15px "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, cx, cy);
+
+  // Soft secondary pass for subtle letter definition
+  ctx.shadowBlur = 6;
+  ctx.fillText(text, cx, cy);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 // --- 3. SCENE INITIALIZATION ---
 function init() {
   const canvas = document.getElementById('infinity-canvas');
@@ -266,6 +295,7 @@ function init() {
   setupCodeParticles();
   setupSparkParticles();
   setupCenterGlow();
+  setupFoggyCodeBackground();
   setupAmbientMotes();
 
   const loadingEl = document.getElementById('loading-indicator');
@@ -446,42 +476,135 @@ function setupCenterGlow() {
   scene.add(centerGlowSprite);
 }
 
-// --- 9. BACKGROUND DIGITAL DUST MOTES ---
-const NUM_MOTES = 45;
+// --- 8.5 FOGGY BACKGROUND CODING TEXT SYSTEM ---
+// Ethereal, misty code fragments drifting in deep Z background for atmospheric depth
+const FOGGY_SNIPPETS = [
+  { text: 'import { useState, useEffect }', color: '#60a5fa' },
+  { text: 'async function fetchTelemetry()', color: '#38bdf8' },
+  { text: 'const [state, setState] = useState()', color: '#c084fc' },
+  { text: 'class CloudCluster extends Node', color: '#ffd700' },
+  { text: 'def execute_pipeline(context):', color: '#e879f9' },
+  { text: 'export const config = { edge: true }', color: '#c084fc' },
+  { text: 'interface DeveloperProfile { id }', color: '#ffd700' },
+  { text: 'git commit -m "feat: deploy core"', color: '#4ade80' },
+  { text: '<div className="cyber-matrix">', color: '#2dd4bf' },
+  { text: 'Promise.all([compile(), link()])', color: '#60a5fa' },
+  { text: 'SELECT * FROM repos WHERE active', color: '#e28743' },
+  { text: 'type Result<T, E> = Ok | Err', color: '#ffd700' },
+  { text: 'kubectl get pods -n production', color: '#38bdf8' },
+  { text: '01010010 01000001 01001110', color: '#00f0ff' },
+  { text: 'while (isAlive) { keepBuilding(); }', color: '#38bdf8' },
+  { text: 'const res = await fetch("/api")', color: '#60a5fa' },
+  { text: 'docker run -d -p 8080 app', color: '#e28743' },
+  { text: 'matrix.transform(vec3(0, 1, 0))', color: '#00f0ff' },
+  { text: 'status: 200 OK • 14ms', color: '#4ade80' },
+  { text: 'std::unique_ptr<Shader> pipe', color: '#ce9178' }
+];
+
+function setupFoggyCodeBackground() {
+  foggyCodeSprites = [];
+  const count = FOGGY_SNIPPETS.length;
+
+  for (let i = 0; i < count; i++) {
+    const item = FOGGY_SNIPPETS[i];
+    const tex = createFoggyTextTexture(item.text, item.color);
+    const mat = new THREE.SpriteMaterial({
+      map: tex,
+      transparent: true,
+      opacity: 0.18,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const sp = new THREE.Sprite(mat);
+
+    // Spread across background canvas:
+    // X from -1.6 to 4.2, Y from -1.0 to 1.0, Z from -2.3 to -0.8 (clearly behind foreground infinity)
+    const seedX = (i * 1.6180339887) % 1.0;
+    const seedY = (i * 2.7182818284) % 1.0;
+    const seedZ = (i * 3.1415926535) % 1.0;
+
+    const baseX = -1.6 + seedX * 5.8;
+    const baseY = -1.0 + seedY * 2.0;
+    const baseZ = -2.2 + seedZ * 1.2;
+
+    const baseOpacity = 0.13 + seedZ * 0.08;
+    const aspect = 256 / 48; // 5.33
+    const baseH = 0.11 + seedY * 0.03;
+
+    sp.scale.set(baseH * aspect, baseH, 1.0);
+    sp.position.set(baseX, baseY, baseZ);
+
+    sp.userData = {
+      baseX,
+      baseY,
+      baseZ,
+      baseOpacity,
+      driftPhase: (i * 0.8) % (Math.PI * 2),
+      harmonicK: (i % 2 === 0 ? 1 : 2) // Integer harmonics for 100% seamless GIF looping
+    };
+
+    scene.add(sp);
+    foggyCodeSprites.push(sp);
+  }
+}
+
+// --- 9. BACKGROUND DIGITAL DUST PARTICLES (Expanded to 150 Particles) ---
+const NUM_MOTES = 150;
 let motesData = [];
 
 function setupAmbientMotes() {
   const moteTex = createRadialGlowTexture();
   motesGeo = new THREE.BufferGeometry();
   const positions = new Float32Array(NUM_MOTES * 3);
+  const colors = new Float32Array(NUM_MOTES * 3);
   motesData = [];
 
+  const moteColors = [
+    new THREE.Color(0x00f0ff), // Cyan
+    new THREE.Color(0x38bdf8), // Sky Blue
+    new THREE.Color(0x818cf8), // Indigo
+    new THREE.Color(0xc084fc), // Purple
+    new THREE.Color(0xe28743), // Amber
+    new THREE.Color(0x2dd4bf)  // Mint
+  ];
+
   for (let i = 0; i < NUM_MOTES; i++) {
-    const x = INFINITY_CENTER.x + (Math.random() - 0.5) * 5.2;
-    const y = INFINITY_CENTER.y + (Math.random() - 0.5) * 2.8;
-    const z = (Math.random() - 0.5) * 2.0;
+    const seed1 = (i * 1.6180339887) % 1.0;
+    const seed2 = (i * 2.7182818284) % 1.0;
+    const seed3 = (i * 3.1415926535) % 1.0;
+
+    const x = -1.8 + seed1 * 6.4;
+    const y = -1.2 + seed2 * 2.4;
+    const z = -2.4 + seed3 * 1.6; // Deep background
 
     positions[i * 3] = x;
     positions[i * 3 + 1] = y;
     positions[i * 3 + 2] = z;
 
+    const c = moteColors[i % moteColors.length];
+    colors[i * 3] = c.r;
+    colors[i * 3 + 1] = c.g;
+    colors[i * 3 + 2] = c.b;
+
     motesData.push({
       baseX: x,
       baseY: y,
       baseZ: z,
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.3 + Math.random() * 0.5
+      phase: seed1 * Math.PI * 2,
+      harmonicK: (i % 3) + 1 // 1, 2, or 3 integer cycles per LOOP_DURATION
     });
   }
 
   motesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  motesGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const moteMat = new THREE.PointsMaterial({
-    size: 0.045,
-    color: 0x38bdf8,
+    size: 0.052,
+    vertexColors: true,
     map: moteTex,
     transparent: true,
-    opacity: 0.28,
+    opacity: 0.45,
     blending: THREE.AdditiveBlending,
     depthWrite: false
   });
@@ -559,17 +682,37 @@ function updateScene(t) {
     centerGlowSprite.material.opacity = 0.20 + Math.sin(cycleProgress * Math.PI * 4) * 0.04;
   }
 
-  // 4. AMBIENT DIGITAL MOTES
+  // 4. AMBIENT DIGITAL MOTES (Seamless harmonic drift)
   if (ambientMotes) {
     const motePositions = motesGeo.attributes.position.array;
+    const twoPi = Math.PI * 2;
     for (let i = 0; i < NUM_MOTES; i++) {
       const md = motesData[i];
-      const mTime = t * md.speed + md.phase;
-      motePositions[i * 3] = md.baseX + Math.sin(mTime) * 0.08;
-      motePositions[i * 3 + 1] = md.baseY + Math.cos(mTime * 0.8) * 0.06;
-      motePositions[i * 3 + 2] = md.baseZ + Math.sin(mTime * 0.6) * 0.05;
+      const angle = cycleProgress * twoPi * md.harmonicK + md.phase;
+      motePositions[i * 3] = md.baseX + Math.sin(angle) * 0.09;
+      motePositions[i * 3 + 1] = md.baseY + Math.cos(angle * 0.8) * 0.07;
+      motePositions[i * 3 + 2] = md.baseZ + Math.sin(angle * 0.6) * 0.05;
     }
     motesGeo.attributes.position.needsUpdate = true;
+  }
+
+  // 5. FOGGY BACKGROUND CODE SPRITES (Seamless harmonic drift & atmospheric pulse)
+  if (foggyCodeSprites.length > 0) {
+    const twoPi = Math.PI * 2;
+    for (let i = 0; i < foggyCodeSprites.length; i++) {
+      const sp = foggyCodeSprites[i];
+      const ud = sp.userData;
+      const angle = cycleProgress * twoPi * ud.harmonicK + ud.driftPhase;
+
+      // Gentle floating drift
+      sp.position.x = ud.baseX + Math.sin(angle) * 0.10;
+      sp.position.y = ud.baseY + Math.cos(angle * 0.5) * 0.06;
+      sp.position.z = ud.baseZ + Math.sin(angle * 0.7) * 0.05;
+
+      // Atmospheric breathing pulse
+      const pulse = Math.sin(angle) * 0.04;
+      sp.material.opacity = ud.baseOpacity + pulse;
+    }
   }
 }
 
