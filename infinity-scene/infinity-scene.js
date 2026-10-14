@@ -8,7 +8,7 @@ const CANVAS_WIDTH = 880;
 const CANVAS_HEIGHT = 280;
 
 // Infinity placement & dimensions: harmoniously adjusted to the canvas area
-// With subtitle tags removed, the composition is rebalanced with generous breathing margins
+// Leaves left 42% clear for developer title & typography (ends at X <= 0.0)
 const INFINITY_CENTER = new THREE.Vector3(2.15, 0.0, 0.0);
 const SCALE_A = 2.00; // Loop half-width (Total width = 4.00 units, spans X: [0.15, 4.15])
 const SCALE_B = 2.70; // Calibrated round loop curvature (Loop height = 2.08 units, aspect = 2.20 : 1)
@@ -21,7 +21,6 @@ let codeSpriteList = [];
 let sparkPoints, sparkGeo;
 let ambientMotes, motesGeo;
 let centerGlowSprite;
-let foggyCodeSprites = [];
 let isLoaded = false;
 let globalTime = 0.0;
 let isManualTime = false;
@@ -89,6 +88,80 @@ function samplePathByArcLength(s) {
   return { pos, tangent, normS };
 }
 
+// 2D distance calculation from any coordinate to the infinity curve
+function getDistanceToInfinityCurve(x, y) {
+  let minDistSq = 1e9;
+  for (let i = 0; i < curveSamples.length; i += 30) {
+    const pt = curveSamples[i].point;
+    const dx = pt.x - x;
+    const dy = pt.y - y;
+    const dSq = dx * dx + dy * dy;
+    if (dSq < minDistSq) minDistSq = dSq;
+  }
+  return Math.sqrt(minDistSq);
+}
+
+// --- 1.1 KINETIC ACCELERATION DYNAMICS MAPPING ---
+// Smooth bounded velocity factor: acceleration surges as particles approach nexus (s = 0.25 and 0.75)
+// and gently decelerates in the outer turning loops (s = 0.0 and 0.5) for keyword readability
+const KINETIC_SAMPLES = 2400;
+const timeToArcLengthTable = new Float32Array(KINETIC_SAMPLES + 1);
+
+function getKineticVelocityProfile(s) {
+  const d1 = Math.abs(s - 0.25);
+  const d2 = Math.abs(s - 0.75);
+  const dMin = Math.min(d1, d2);
+  const sigma = 0.085;
+  const accelFactor = Math.exp(-(dMin * dMin) / (2 * sigma * sigma));
+  return 0.80 + 0.52 * accelFactor; // Base 0.80x, peak 1.32x at central crossing
+}
+
+function precomputeKineticTiming() {
+  let cumulativeTime = 0;
+  const dtArray = new Float32Array(KINETIC_SAMPLES);
+  for (let i = 0; i < KINETIC_SAMPLES; i++) {
+    const s = i / KINETIC_SAMPLES;
+    const v = getKineticVelocityProfile(s);
+    dtArray[i] = 1.0 / v;
+    cumulativeTime += dtArray[i];
+  }
+
+  const timeTable = new Float32Array(KINETIC_SAMPLES + 1);
+  let acc = 0;
+  timeTable[0] = 0;
+  for (let i = 0; i < KINETIC_SAMPLES; i++) {
+    acc += dtArray[i] / cumulativeTime;
+    timeTable[i + 1] = acc;
+  }
+  timeTable[KINETIC_SAMPLES] = 1.0;
+
+  for (let j = 0; j <= KINETIC_SAMPLES; j++) {
+    const targetT = j / KINETIC_SAMPLES;
+    let low = 0, high = KINETIC_SAMPLES;
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      if (timeTable[mid] < targetT) low = mid + 1;
+      else high = mid - 1;
+    }
+    const idx = Math.max(1, Math.min(low, KINETIC_SAMPLES));
+    const t0 = timeTable[idx - 1];
+    const t1 = timeTable[idx];
+    const frac = (t1 > t0) ? (targetT - t0) / (t1 - t0) : 0;
+    const s0 = (idx - 1) / KINETIC_SAMPLES;
+    const s1 = idx / KINETIC_SAMPLES;
+    timeToArcLengthTable[j] = s0 + (s1 - s0) * frac;
+  }
+}
+
+function getKineticS(timePhase) {
+  const normT = ((timePhase % 1.0) + 1.0) % 1.0;
+  const idxFloat = normT * KINETIC_SAMPLES;
+  const i0 = Math.floor(idxFloat);
+  const i1 = Math.min(i0 + 1, KINETIC_SAMPLES);
+  const frac = idxFloat - i0;
+  return timeToArcLengthTable[i0] + (timeToArcLengthTable[i1] - timeToArcLengthTable[i0]) * frac;
+}
+
 // Custom 3D Curve class for Three.js TubeGeometry
 class Infinity3DCurve extends THREE.Curve {
   constructor() {
@@ -115,7 +188,7 @@ const SYNTAX_TOKENS = [
   { text: 'yield',    color: '#60a5fa', isShort: false },
   { text: 'handle()', color: '#38bdf8', isShort: false },
 
-  // 2. Brown / Amber / Warm Rust tokens ("sums are kind of brown other kind of colors")
+  // 2. Brown / Amber / Warm Rust tokens
   { text: "'ready'",  color: '#e28743', isShort: false },
   { text: "'api'",    color: '#d19a66', isShort: false },
   { text: '3000',     color: '#ce9178', isShort: true  },
@@ -236,10 +309,86 @@ function createRadialGlowTexture() {
   return tex;
 }
 
+// --- 2.1 CURATED LIBRARY OF 64 SHORT PROGRAMMING FRAGMENTS ---
+const RANDOM_BACKGROUND_LIBRARY = [
+  // Async & Reactive Flow
+  { text: 'const flow = true;', color: '#38bdf8' },
+  { text: 'requestAnimationFrame(tick);', color: '#60a5fa' },
+  { text: 'while (connected) { build(); }', color: '#38bdf8' },
+  { text: 'async function create()', color: '#60a5fa' },
+  { text: 'render(deltaTime);', color: '#38bdf8' },
+  { text: 'const motion = smooth;', color: '#c084fc' },
+  { text: 'return infiniteLoop;', color: '#e879f9' },
+  { text: 'particles.update(dt);', color: '#38bdf8' },
+  { text: 'await buildExperience();', color: '#60a5fa' },
+  { text: 'const ideas = iterate();', color: '#ffd700' },
+  { text: 'if (quality > target) refine();', color: '#c084fc' },
+  { text: '// keep building', color: '#94a3b8' },
+  { text: 'ship(version);', color: '#4ade80' },
+  { text: 'Observable.pipe(filter, map)', color: '#60a5fa' },
+  { text: 'eventLoop.nextTick(drain)', color: '#38bdf8' },
+  { text: 'Promise.allSettled(tasks)', color: '#60a5fa' },
+
+  // Full-Stack, Architecture & DevOps
+  { text: 'git commit -m "refine"', color: '#4ade80' },
+  { text: 'kubectl apply -f cluster.yml', color: '#38bdf8' },
+  { text: 'docker compose up -d --build', color: '#e28743' },
+  { text: 'const [state, dispatch] = useReducer()', color: '#c084fc' },
+  { text: 'export default function Hub()', color: '#c084fc' },
+  { text: 'type Result<T, E> = Ok | Err', color: '#ffd700' },
+  { text: 'SELECT id, latency FROM nodes', color: '#e28743' },
+  { text: 'interface SystemGraph { nodes, edges }', color: '#ffd700' },
+  { text: 'response.status(200).json(meta)', color: '#4ade80' },
+  { text: 'cache.set(key, val, { ttl: 3600 })', color: '#d19a66' },
+  { text: 'worker.postMessage({ type: "SYNC" })', color: '#38bdf8' },
+  { text: 'const edge = new EdgeRuntime()', color: '#00f0ff' },
+  { text: 'export const runtime = "nodejs"', color: '#c084fc' },
+  { text: 'git push origin main --tags', color: '#4ade80' },
+  { text: 'const cluster = await initMesh()', color: '#60a5fa' },
+  { text: 'status: 200 OK • 12ms', color: '#2dd4bf' },
+
+  // Graphics, Shaders, 3D & Animation
+  { text: 'transform: translate3d(0, 0, 0)', color: '#ffd700' },
+  { text: 'vec4 fragColor = vec4(rgb, 1.0);', color: '#00f0ff' },
+  { text: 'uniform float u_time;', color: '#38bdf8' },
+  { text: 'mat4 projection = perspective(fov)', color: '#60a5fa' },
+  { text: 'ray.direction = normalize(target)', color: '#00f0ff' },
+  { text: 'gl_Position = u_mvp * vec4(pos, 1.0)', color: '#38bdf8' },
+  { text: 'THREE.TubeGeometry(path, 240)', color: '#60a5fa' },
+  { text: 'float noise = simplex3D(pos * 2.0)', color: '#00f0ff' },
+  { text: 'light.intensity = hermite(t)', color: '#ffd700' },
+  { text: 'camera.lookAt(targetVector)', color: '#60a5fa' },
+  { text: 'scene.add(ambientParticles)', color: '#38bdf8' },
+  { text: 'material.roughness = 0.15;', color: '#e28743' },
+  { text: 'viewport.aspect = width / height;', color: '#ffd700' },
+  { text: 'renderer.toneMapping = Linear;', color: '#00f0ff' },
+
+  // Python, Systems, Algorithms & AI
+  { text: 'def execute_pipeline(context):', color: '#e879f9' },
+  { text: 'yield from stream_telemetry()', color: '#60a5fa' },
+  { text: 'with ThreadPoolExecutor() as pool:', color: '#c084fc' },
+  { text: 'class Vector3D(NamedTuple):', color: '#e879f9' },
+  { text: 'data = np.ascontiguousarray(buf)', color: '#e28743' },
+  { text: 'std::unique_ptr<Node> root;', color: '#ce9178' },
+  { text: 'auto [minX, maxX] = bounds;', color: '#cd853f' },
+  { text: 'fn handle_stream(mut stream: TcpStream)', color: '#e28743' },
+  { text: 'binary_search(samples, arcLength)', color: '#38bdf8' },
+  { text: 'quicksort(partition, 0, len - 1)', color: '#ffd700' },
+  { text: 'tensor.to(device="cuda:0")', color: '#4ade80' },
+  { text: 'embeddings = model.encode(prompt)', color: '#2dd4bf' },
+  { text: 'const omega = 2.0 * Math.PI / T;', color: '#38bdf8' },
+  { text: 'velocity += acceleration * dt;', color: '#00f0ff' },
+  { text: 'const lerp = (a, b, t) => a + (b - a)*t;', color: '#c084fc' },
+  { text: 'quaternion.setFromAxisAngle(axis, phi);', color: '#60a5fa' },
+  { text: 'matrix4.compose(pos, rot, scale);', color: '#ffd700' },
+  { text: 'while (alive) { innovate(); }', color: '#38bdf8' }
+];
+
+let bgTextures = [];
 function createFoggyTextTexture(text, color = '#38bdf8') {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
-  canvas.height = 48;
+  canvas.height = 44;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -248,20 +397,231 @@ function createFoggyTextTexture(text, color = '#38bdf8') {
 
   // Foggy atmospheric blur pass
   ctx.shadowColor = color;
-  ctx.shadowBlur = 14;
+  ctx.shadowBlur = 10;
   ctx.fillStyle = color;
   ctx.font = 'bold 15px "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, cx, cy);
 
-  // Soft secondary pass for subtle letter definition
-  ctx.shadowBlur = 6;
+  // Crisp secondary pass for clear letterform definition
+  ctx.shadowBlur = 3;
   ctx.fillText(text, cx, cy);
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.needsUpdate = true;
   return tex;
+}
+
+// Pseudo-random hash generator for deterministic playback and real-time generation
+function pseudoHash(a, b, c) {
+  let h = (a * 1618033989) ^ (b * 2718281829) ^ (c * 3141592653);
+  h = Math.imul(h ^ (h >>> 16), 2246822507);
+  h = Math.imul(h ^ (h >>> 13), 3266489909);
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+function pseudoHashFloat(a, b, c) {
+  return (pseudoHash(a, b, c) % 1000000) / 1000000.0;
+}
+
+// --- 2.2 EPHEMERAL BACKGROUND TEXT SYSTEM ---
+const BG_SLOT_COUNT = 16;
+let bgSlots = [];
+
+function setupEphemeralBackgroundSystem() {
+  // Pre-generate textures for the entire curated library
+  bgTextures = RANDOM_BACKGROUND_LIBRARY.map(item => createFoggyTextTexture(item.text, item.color));
+
+  bgSlots = [];
+  const incommensuratePeriods = [
+    4.3, 5.1, 4.6, 5.4, 4.8, 5.2, 4.4, 5.6,
+    4.7, 5.3, 4.5, 5.5, 4.9, 5.0, 4.2, 5.7
+  ];
+
+  for (let k = 0; k < BG_SLOT_COUNT; k++) {
+    const mat = new THREE.SpriteMaterial({
+      map: bgTextures[k % bgTextures.length],
+      transparent: true,
+      opacity: 0.0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const sp = new THREE.Sprite(mat);
+    const aspect = 256 / 44; // 5.81
+    const baseH = 0.105;
+    sp.scale.set(baseH * aspect, baseH, 1.0);
+    scene.add(sp);
+
+    bgSlots.push({
+      sprite: sp,
+      period: incommensuratePeriods[k],
+      stagger: k * (5.0 / BG_SLOT_COUNT),
+      aspect,
+      baseH
+    });
+  }
+}
+
+// Rejection sampling for safe candidate spawn positions
+function getSafeBackgroundPosition(k, cycle) {
+  for (let attempt = 0; attempt < 25; attempt++) {
+    const seedX = pseudoHashFloat(k, cycle, 10 + attempt * 3);
+    const seedY = pseudoHashFloat(k, cycle, 11 + attempt * 3);
+    const seedZ = pseudoHashFloat(k, cycle, 12 + attempt * 3);
+
+    const x = -1.6 + seedX * 5.8;
+    const y = -1.0 + seedY * 2.0;
+    const z = -2.3 + seedZ * 1.3;
+
+    // Rule 1: Safe distance from the foreground infinity ribbon
+    const distToCurve = getDistanceToInfinityCurve(x, y);
+    if (distToCurve < 0.38) continue;
+
+    // Rule 2: Safe clearance from left identity typography card
+    if (x > -1.2 && x < 0.45 && y > -0.65 && y < 0.65) continue;
+
+    return { x, y, z };
+  }
+  // Deterministic fallback in safe outer corner
+  const fallbackX = 3.3 + (k % 3) * 0.3;
+  const fallbackY = -0.8 + ((k * 7) % 5) * 0.35;
+  return { x: fallbackX, y: fallbackY, z: -1.8 };
+}
+
+// Update ephemeral background text at simulation time t
+function updateEphemeralBackground(t) {
+  for (let k = 0; k < bgSlots.length; k++) {
+    const slot = bgSlots[k];
+    const absT = t + slot.stagger;
+    const cycle = Math.floor(absT / slot.period);
+    const tau = absT - cycle * slot.period; // [0, period)
+
+    // Pick fragment text from library using cycle hash
+    const textIdx = pseudoHash(k, cycle, 1) % RANDOM_BACKGROUND_LIBRARY.length;
+    if (slot.sprite.material.map !== bgTextures[textIdx]) {
+      slot.sprite.material.map = bgTextures[textIdx];
+      slot.sprite.material.needsUpdate = true;
+    }
+
+    // Lifecycle phase durations
+    const tIn = 0.8 + 0.4 * pseudoHashFloat(k, cycle, 2);
+    const tOut = 0.8 + 0.4 * pseudoHashFloat(k, cycle, 3);
+    const tHold = slot.period - tIn - tOut;
+    const maxOpacity = 0.16 + 0.10 * pseudoHashFloat(k, cycle, 4);
+
+    // Calculate smooth Hermite cubic opacity curve
+    let opacity = 0.0;
+    if (tau < tIn) {
+      const u = tau / tIn;
+      opacity = maxOpacity * (u * u * (3.0 - 2.0 * u));
+    } else if (tau < tIn + tHold) {
+      opacity = maxOpacity;
+    } else {
+      const u = (tau - tIn - tHold) / tOut;
+      const clampedU = Math.min(1.0, Math.max(0.0, u));
+      opacity = maxOpacity * (1.0 - (clampedU * clampedU * (3.0 - 2.0 * clampedU)));
+    }
+
+    // Safe spawn position with subtle organic drift
+    const pos = getSafeBackgroundPosition(k, cycle);
+    const driftVx = (pseudoHashFloat(k, cycle, 5) - 0.5) * 0.035;
+    const driftVy = (pseudoHashFloat(k, cycle, 6) - 0.5) * 0.020;
+    const driftPhase = (tau - slot.period * 0.5);
+
+    slot.sprite.position.set(
+      pos.x + driftVx * driftPhase,
+      pos.y + driftVy * driftPhase,
+      pos.z
+    );
+
+    const h = slot.baseH * (0.95 + 0.10 * pseudoHashFloat(k, cycle, 7));
+    slot.sprite.scale.set(h * slot.aspect, h, 1.0);
+    slot.sprite.material.opacity = Math.max(0.0, Math.min(0.25, opacity));
+  }
+}
+
+// --- 2.3 KINETIC NEXUS ACCELERATION SPARKS ---
+const NUM_NEXUS_SPARKS = 80;
+let nexusSparkGeo, nexusSparkData = [];
+
+function setupNexusSparks() {
+  const sparkTex = createRadialGlowTexture();
+  nexusSparkGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(NUM_NEXUS_SPARKS * 3);
+  const colors = new Float32Array(NUM_NEXUS_SPARKS * 3);
+  nexusSparkData = [];
+
+  const sparkPalette = [
+    new THREE.Color(0x00f0ff), // Cyan
+    new THREE.Color(0x38bdf8), // Sky Blue
+    new THREE.Color(0xffffff), // White
+    new THREE.Color(0xc084fc)  // Purple
+  ];
+
+  for (let i = 0; i < NUM_NEXUS_SPARKS; i++) {
+    const isFirstCrossing = (i % 2 === 0);
+    const baseCrossingS = isFirstCrossing ? 0.25 : 0.75;
+
+    nexusSparkData.push({
+      baseCrossingS,
+      phaseOffset: (i / NUM_NEXUS_SPARKS),
+      radSpread: (Math.random() - 0.5) * 0.28,
+      depthSpread: (Math.random() - 0.5) * 0.22,
+      speedScale: 1.25 + Math.random() * 0.45
+    });
+
+    const c = sparkPalette[i % sparkPalette.length];
+    colors[i * 3] = c.r;
+    colors[i * 3 + 1] = c.g;
+    colors[i * 3 + 2] = c.b;
+  }
+
+  nexusSparkGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  nexusSparkGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: 0.065,
+    vertexColors: true,
+    map: sparkTex,
+    transparent: true,
+    opacity: 0.90,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+
+  const nexusPoints = new THREE.Points(nexusSparkGeo, mat);
+  scene.add(nexusPoints);
+}
+
+function updateNexusSparks(t) {
+  if (!nexusSparkGeo) return;
+  const positions = nexusSparkGeo.attributes.position.array;
+  const cycleProgress = (t % LOOP_DURATION) / LOOP_DURATION;
+  const upVec = new THREE.Vector3(0, 0, 1);
+
+  for (let i = 0; i < NUM_NEXUS_SPARKS; i++) {
+    const nd = nexusSparkData[i];
+    // Spark emerges near crossing and accelerates outwards
+    const sparkPhase = ((cycleProgress * nd.speedScale + nd.phaseOffset) % 0.16) - 0.08;
+    const currentS = nd.baseCrossingS + sparkPhase;
+
+    const { pos, tangent } = samplePathByArcLength(currentS);
+    const normal = new THREE.Vector3().crossVectors(tangent, upVec).normalize();
+    const binormal = new THREE.Vector3().crossVectors(tangent, normal).normalize();
+
+    // Outward radial acceleration
+    const accelRadius = nd.radSpread * (1.0 + Math.abs(sparkPhase) * 6.0);
+    const p = pos.clone()
+      .addScaledVector(normal, accelRadius)
+      .addScaledVector(binormal, nd.depthSpread);
+
+    positions[i * 3] = p.x;
+    positions[i * 3 + 1] = p.y;
+    positions[i * 3 + 2] = p.z;
+  }
+  nexusSparkGeo.attributes.position.needsUpdate = true;
 }
 
 // --- 3. SCENE INITIALIZATION ---
@@ -290,12 +650,14 @@ function init() {
   camera.lookAt(0.55, 0.0, 0.0);
 
   precomputeCurve();
+  precomputeKineticTiming();
   setupLighting();
   setupLuminousCore();
   setupCodeParticles();
   setupSparkParticles();
+  setupNexusSparks();
   setupCenterGlow();
-  setupFoggyCodeBackground();
+  setupEphemeralBackgroundSystem();
   setupAmbientMotes();
 
   const loadingEl = document.getElementById('loading-indicator');
@@ -305,7 +667,7 @@ function init() {
   // Deterministic frame capture seeking interface
   window.seekSimulationTime = (t) => {
     isManualTime = true;
-    updateScene(t % LOOP_DURATION);
+    updateScene(t);
     renderer.render(scene, camera);
   };
 
@@ -346,14 +708,12 @@ function setupLuminousCore() {
 }
 
 // --- 6. HIGH-DENSITY 3-TRACK MULTICOLOR CODE TOKEN SPRITES ---
-// Total 280 code particles (substantial density increase across 3 staggered ribbon lanes)
 const TOTAL_TOKENS = 280;
 
 function setupCodeParticles() {
   const tokenTextures = SYNTAX_TOKENS.map(tok => createTokenTexture(tok));
   codeSpriteList = [];
 
-  // Multi-lane staggered distribution: Lane 0 (inner: -0.09), Lane 1 (center: 0.0), Lane 2 (outer: +0.09)
   const LANES = [-0.09, 0.0, 0.09];
   const DEPTH_LANES = [-0.06, 0.0, 0.06];
 
@@ -361,7 +721,6 @@ function setupCodeParticles() {
     const tokIdx = i % SYNTAX_TOKENS.length;
     const tokenInfo = SYNTAX_TOKENS[tokIdx];
 
-    // NormalBlending preserves saturated colors (blues, browns, purples, greens, yellows, whites)
     const mat = new THREE.SpriteMaterial({
       map: tokenTextures[tokIdx],
       transparent: true,
@@ -371,11 +730,8 @@ function setupCodeParticles() {
     });
 
     const sprite = new THREE.Sprite(mat);
-
-    // Initial normalized path position s in [0, 1)
     const baseS = i / TOTAL_TOKENS;
 
-    // Deterministic pseudo-random 3-lane stagger for high density without visual chaos
     const laneIdx = i % 3;
     const seed = (i * 1.6180339887) % 1.0;
     const seed2 = (i * 2.7182818284) % 1.0;
@@ -383,7 +739,6 @@ function setupCodeParticles() {
     const radialOffset = LANES[laneIdx] + (seed - 0.5) * 0.05;
     const depthOffset = DEPTH_LANES[(laneIdx + 1) % 3] + (seed2 - 0.5) * 0.05;
 
-    // Compact token scaling for crisp readability at high density
     const baseH = tokenInfo.isShort ? 0.095 + seed * 0.02 : 0.105 + seed * 0.025;
     const aspect = tokenInfo.isShort ? 1.6 : 3.3;
 
@@ -413,7 +768,6 @@ function setupSparkParticles() {
   const colors = new Float32Array(NUM_SPARKS * 3);
   sparkData = [];
 
-  // Multicolor spark palette matching syntax theme
   const sparkColors = [
     new THREE.Color(0x00f0ff), // Cyan
     new THREE.Color(0x38bdf8), // Sky Blue
@@ -431,8 +785,7 @@ function setupSparkParticles() {
     sparkData.push({
       baseS,
       radOffset: (seed - 0.5) * 0.22,
-      depthOffset: (seed2 - 0.5) * 0.16,
-      speedMult: 1.0 // Perfectly uniform speed for rock-solid loop continuity
+      depthOffset: (seed2 - 0.5) * 0.16
     });
 
     const c = sparkColors[i % sparkColors.length];
@@ -476,80 +829,7 @@ function setupCenterGlow() {
   scene.add(centerGlowSprite);
 }
 
-// --- 8.5 FOGGY BACKGROUND CODING TEXT SYSTEM ---
-// Ethereal, misty code fragments drifting in deep Z background for atmospheric depth
-const FOGGY_SNIPPETS = [
-  { text: 'import { useState, useEffect }', color: '#60a5fa' },
-  { text: 'async function fetchTelemetry()', color: '#38bdf8' },
-  { text: 'const [state, setState] = useState()', color: '#c084fc' },
-  { text: 'class CloudCluster extends Node', color: '#ffd700' },
-  { text: 'def execute_pipeline(context):', color: '#e879f9' },
-  { text: 'export const config = { edge: true }', color: '#c084fc' },
-  { text: 'interface DeveloperProfile { id }', color: '#ffd700' },
-  { text: 'git commit -m "feat: deploy core"', color: '#4ade80' },
-  { text: '<div className="cyber-matrix">', color: '#2dd4bf' },
-  { text: 'Promise.all([compile(), link()])', color: '#60a5fa' },
-  { text: 'SELECT * FROM repos WHERE active', color: '#e28743' },
-  { text: 'type Result<T, E> = Ok | Err', color: '#ffd700' },
-  { text: 'kubectl get pods -n production', color: '#38bdf8' },
-  { text: '01010010 01000001 01001110', color: '#00f0ff' },
-  { text: 'while (isAlive) { keepBuilding(); }', color: '#38bdf8' },
-  { text: 'const res = await fetch("/api")', color: '#60a5fa' },
-  { text: 'docker run -d -p 8080 app', color: '#e28743' },
-  { text: 'matrix.transform(vec3(0, 1, 0))', color: '#00f0ff' },
-  { text: 'status: 200 OK • 14ms', color: '#4ade80' },
-  { text: 'std::unique_ptr<Shader> pipe', color: '#ce9178' }
-];
-
-function setupFoggyCodeBackground() {
-  foggyCodeSprites = [];
-  const count = FOGGY_SNIPPETS.length;
-
-  for (let i = 0; i < count; i++) {
-    const item = FOGGY_SNIPPETS[i];
-    const tex = createFoggyTextTexture(item.text, item.color);
-    const mat = new THREE.SpriteMaterial({
-      map: tex,
-      transparent: true,
-      opacity: 0.18,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-
-    const sp = new THREE.Sprite(mat);
-
-    // Spread across background canvas:
-    // X from -1.6 to 4.2, Y from -1.0 to 1.0, Z from -2.3 to -0.8 (clearly behind foreground infinity)
-    const seedX = (i * 1.6180339887) % 1.0;
-    const seedY = (i * 2.7182818284) % 1.0;
-    const seedZ = (i * 3.1415926535) % 1.0;
-
-    const baseX = -1.6 + seedX * 5.8;
-    const baseY = -1.0 + seedY * 2.0;
-    const baseZ = -2.2 + seedZ * 1.2;
-
-    const baseOpacity = 0.13 + seedZ * 0.08;
-    const aspect = 256 / 48; // 5.33
-    const baseH = 0.11 + seedY * 0.03;
-
-    sp.scale.set(baseH * aspect, baseH, 1.0);
-    sp.position.set(baseX, baseY, baseZ);
-
-    sp.userData = {
-      baseX,
-      baseY,
-      baseZ,
-      baseOpacity,
-      driftPhase: (i * 0.8) % (Math.PI * 2),
-      harmonicK: (i % 2 === 0 ? 1 : 2) // Integer harmonics for 100% seamless GIF looping
-    };
-
-    scene.add(sp);
-    foggyCodeSprites.push(sp);
-  }
-}
-
-// --- 9. BACKGROUND DIGITAL DUST PARTICLES (Expanded to 150 Particles) ---
+// --- 9. BACKGROUND DIGITAL DUST PARTICLES (150 Particles) ---
 const NUM_MOTES = 150;
 let motesData = [];
 
@@ -576,7 +856,7 @@ function setupAmbientMotes() {
 
     const x = -1.8 + seed1 * 6.4;
     const y = -1.2 + seed2 * 2.4;
-    const z = -2.4 + seed3 * 1.6; // Deep background
+    const z = -2.4 + seed3 * 1.6;
 
     positions[i * 3] = x;
     positions[i * 3 + 1] = y;
@@ -592,7 +872,7 @@ function setupAmbientMotes() {
       baseY: y,
       baseZ: z,
       phase: seed1 * Math.PI * 2,
-      harmonicK: (i % 3) + 1 // 1, 2, or 3 integer cycles per LOOP_DURATION
+      harmonicK: (i % 3) + 1
     });
   }
 
@@ -613,20 +893,21 @@ function setupAmbientMotes() {
   scene.add(ambientMotes);
 }
 
-// --- 10. DETERMINISTIC DYNAMICS UPDATE (Continuous, Smooth & Time-Based) ---
+// --- 10. DETERMINISTIC DYNAMICS UPDATE ---
 function updateScene(t) {
   if (!isLoaded) return;
 
   const cycleProgress = (t % LOOP_DURATION) / LOOP_DURATION; // [0, 1)
-
-  // 1. UPDATE HIGH-DENSITY CODE TOKEN SPRITES
   const upVec = new THREE.Vector3(0, 0, 1);
+
+  // 1. UPDATE CODE TOKEN SPRITES WITH KINETIC ACCELERATION
   for (let i = 0; i < codeSpriteList.length; i++) {
     const sp = codeSpriteList[i];
     const ud = sp.userData;
 
-    // Advance path coordinate s continuously
-    const curS = (ud.baseS + cycleProgress) % 1.0;
+    // Advance path coordinate s using kinetic timing mapping
+    const curTimePhase = ud.baseS + cycleProgress;
+    const curS = getKineticS(curTimePhase);
     const { pos, tangent } = samplePathByArcLength(curS);
 
     const normal = new THREE.Vector3().crossVectors(tangent, upVec).normalize();
@@ -655,11 +936,12 @@ function updateScene(t) {
     sp.material.opacity = 0.95;
   }
 
-  // 2. UPDATE MICRO-SPARK PARTICLES
+  // 2. UPDATE MICRO-SPARK PARTICLES WITH KINETIC ACCELERATION
   const sparkPositions = sparkGeo.attributes.position.array;
   for (let i = 0; i < NUM_SPARKS; i++) {
     const sd = sparkData[i];
-    const curS = (sd.baseS + cycleProgress * sd.speedMult) % 1.0;
+    const curTimePhase = sd.baseS + cycleProgress;
+    const curS = getKineticS(curTimePhase);
     const { pos, tangent } = samplePathByArcLength(curS);
 
     const normal = new THREE.Vector3().crossVectors(tangent, upVec).normalize();
@@ -675,14 +957,20 @@ function updateScene(t) {
   }
   sparkGeo.attributes.position.needsUpdate = true;
 
-  // 3. CENTER CROSSING GLOW PULSE
+  // 3. UPDATE KINETIC NEXUS SPARKS
+  updateNexusSparks(t);
+
+  // 4. CENTER CROSSING GLOW PULSE
   if (centerGlowSprite) {
     const pulse = 1.0 + Math.sin(cycleProgress * Math.PI * 4) * 0.06;
     centerGlowSprite.scale.set(1.4 * pulse, 1.4 * pulse, 1.0);
     centerGlowSprite.material.opacity = 0.20 + Math.sin(cycleProgress * Math.PI * 4) * 0.04;
   }
 
-  // 4. AMBIENT DIGITAL MOTES (Seamless harmonic drift)
+  // 5. UPDATE EPHEMERAL RANDOMIZED BACKGROUND CODE TEXT
+  updateEphemeralBackground(t);
+
+  // 6. AMBIENT DIGITAL MOTES (Continuous harmonic drift)
   if (ambientMotes) {
     const motePositions = motesGeo.attributes.position.array;
     const twoPi = Math.PI * 2;
@@ -695,25 +983,6 @@ function updateScene(t) {
     }
     motesGeo.attributes.position.needsUpdate = true;
   }
-
-  // 5. FOGGY BACKGROUND CODE SPRITES (Seamless harmonic drift & atmospheric pulse)
-  if (foggyCodeSprites.length > 0) {
-    const twoPi = Math.PI * 2;
-    for (let i = 0; i < foggyCodeSprites.length; i++) {
-      const sp = foggyCodeSprites[i];
-      const ud = sp.userData;
-      const angle = cycleProgress * twoPi * ud.harmonicK + ud.driftPhase;
-
-      // Gentle floating drift
-      sp.position.x = ud.baseX + Math.sin(angle) * 0.10;
-      sp.position.y = ud.baseY + Math.cos(angle * 0.5) * 0.06;
-      sp.position.z = ud.baseZ + Math.sin(angle * 0.7) * 0.05;
-
-      // Atmospheric breathing pulse
-      const pulse = Math.sin(angle) * 0.04;
-      sp.material.opacity = ud.baseOpacity + pulse;
-    }
-  }
 }
 
 // --- 11. CONTINUOUS RENDER LOOP (Time-Based & Frame-Rate Independent) ---
@@ -722,7 +991,7 @@ function renderLoop(now) {
   if (!isManualTime) {
     const dt = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
-    globalTime = (globalTime + dt) % LOOP_DURATION;
+    globalTime += dt;
     updateScene(globalTime);
     renderer.render(scene, camera);
   }
