@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rana0Codes — 3D Dragon Guardian &amp; Interactive Showcase</title>
+  <title>Rana0Codes — Animated Code Infinity Showcase</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: #06080e;
+      background-color: #030611;
       color: #e2e8f0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
@@ -20,13 +20,13 @@
       position: relative;
       width: 880px;
       height: 280px;
-      background: radial-gradient(circle at 75% 50%, #0c1224 0%, #06080e 70%, #030408 100%);
+      background: radial-gradient(circle at 72% 50%, #081a36 0%, #040916 55%, #020409 100%);
       border-radius: 16px;
-      border: 1.2px solid rgba(245, 158, 11, 0.35);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.5);
+      border: 1.2px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(8, 26, 54, 0.4);
       overflow: hidden;
     }
-    #dragon-canvas {
+    #infinity-canvas {
       position: absolute;
       top: 0;
       left: 0;
@@ -57,12 +57,12 @@
       gap: 7px;
       padding: 4px 12px;
       border-radius: 12px;
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.35);
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 10.5px;
       font-weight: 600;
-      color: #fbbf24;
+      color: #38bdf8;
       letter-spacing: 0.5px;
       width: fit-content;
       margin-bottom: 12px;
@@ -71,8 +71,8 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
+      background: #00f0ff;
+      box-shadow: 0 0 8px #00f0ff;
     }
     .dev-name {
       font-size: 34px;
@@ -101,14 +101,14 @@
       color: #94a3b8;
       line-height: 1.6;
     }
-    .dev-tags strong { color: #f59e0b; }
-    .dev-tags span { color: #38bdf8; }
+    .dev-tags strong { color: #38bdf8; }
+    .dev-tags span { color: #00f0ff; }
     #loading-indicator {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #f59e0b;
+      color: #38bdf8;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
       letter-spacing: 1px;
@@ -128,8 +128,8 @@
 </head>
 <body>
   <div id="hero-container">
-    <div id="loading-indicator">INITIALIZING 3D GUARDIAN...</div>
-    <canvas id="dragon-canvas" width="880" height="280"></canvas>
+    <div id="loading-indicator">INITIALIZING CODE INFINITY...</div>
+    <canvas id="infinity-canvas" width="880" height="280"></canvas>
     <div id="ui-overlay">
       <div class="hero-info-card">
         <div class="status-pill">
@@ -139,13 +139,13 @@
         <h1 class="dev-name">JUYEL RANA <span>/ @Rana0Codes</span></h1>
         <p class="dev-title">Full-Stack Developer &amp; Systems Builder</p>
         <div class="dev-tags">
-          &gt; <strong>clean architecture</strong> &bull; creative 3D web graphics<br>
+          &gt; <strong>clean architecture</strong> &bull; continuous code infinity<br>
           &gt; high-velocity delivery &bull; <span>robust cloud systems</span>
         </div>
       </div>
     </div>
   </div>
 
-  <script type="module" src="dragon-scene.js"></script>
+  <script type="module" src="infinity-scene.js"></script>
 </body>
 </html>
